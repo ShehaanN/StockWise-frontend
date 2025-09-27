@@ -1,12 +1,13 @@
 import "./App.css";
-import { Button } from "@/components/ui/button";
+import ProductList from "./components/ProductList";
+import ProductForm from "./components/ProductForm";
 
 const App = () => {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <h1>Product Inventory</h1>
-      <Button>Click me</Button>
-    </div>
+    <>
+      {/* <ProductForm /> */}
+      <ProductList />
+    </>
   );
 };
 
