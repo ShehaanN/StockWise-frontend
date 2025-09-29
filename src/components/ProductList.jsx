@@ -34,16 +34,17 @@ const ProductList = () => {
   //     { id: 19, name: "Smartwatch", price: 220.0, stock: 13 },
   //     { id: 20, name: "Tablet", price: 350.0, stock: 0 },
   //   ];
+  const [currentProduct, setCurrentProduct] = useState(null);
+  const [products, setProducts] = useState([]);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
   // Calculate pagination
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = products.slice(
+  const productsPerPage = products.slice(
     indexOfFirstProduct,
     indexOfLastProduct
   );
@@ -69,36 +70,56 @@ const ProductList = () => {
     setCurrentPage(pageNumber);
   };
 
-  const onEdit = (product) => {
-    // Handle edit action
-    console.log("Edit product:", product);
-  };
-
-  const onDelete = (productId) => {
-    // Handle delete action
-    console.log("Delete product with ID:", productId);
-  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     // Update the product state here
-    console.log(`Change ${name} to ${value}`);
+    setCurrentProduct((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
+
+  console.log("Current Product:", currentProduct);
 
   useEffect(() => {
     fetchProducts();
   }, [searchTerm]);
 
-  console.log("fproducts", products);
+  const fetchProducts = async () => {
+    try {
+      const data = await api.getProducts(searchTerm);
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
 
-  const fetchProducts = () => {
-    api
-      .getProducts(searchTerm)
-      .then((data) => {
-        setProducts(data);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch products: ", error);
-      });
+  const handleDelete = async (productId) => {
+    try {
+      await api.deleteProduct(productId);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
+
+  const handleUpdate = async (event) => {
+    event.preventDefault();
+    if (!currentProduct || !currentProduct.id) return;
+    try {
+      const poductToUpdate = {
+        name: currentProduct.name,
+        price: currentProduct.price,
+        stock: currentProduct.stock,
+      };
+
+      await api.updateProduct(currentProduct.id, poductToUpdate);
+      fetchProducts();
+      setCurrentProduct(null);
+      console.log("Product updated successfully");
+    } catch (error) {
+      console.error("Error updating product:", error);
+    }
   };
 
   return (
@@ -152,8 +173,8 @@ const ProductList = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentProducts.length > 0 ? (
-                  currentProducts.map((product) => (
+                {productsPerPage.length > 0 ? (
+                  productsPerPage.map((product) => (
                     <tr key={product.id}>
                       <td>{product.id}</td>
                       <td>
@@ -182,7 +203,7 @@ const ProductList = () => {
                               <DialogTrigger asChild>
                                 <button
                                   className="btn btn-sm btn-outline"
-                                  onClick={() => onEdit(product)}
+                                  onClick={() => setCurrentProduct(product)}
                                 >
                                   Edit
                                 </button>
@@ -206,7 +227,7 @@ const ProductList = () => {
                                       type="text"
                                       name="name"
                                       className="form-input"
-                                      value={product.name}
+                                      value={currentProduct?.name || ""}
                                       onChange={handleInputChange}
                                       required
                                     />
@@ -219,7 +240,7 @@ const ProductList = () => {
                                       type="number"
                                       name="price"
                                       className="form-input"
-                                      value={product.price}
+                                      value={currentProduct?.price || ""}
                                       onChange={handleInputChange}
                                       step="0.01"
                                       min="0"
@@ -234,7 +255,7 @@ const ProductList = () => {
                                       type="number"
                                       name="stock"
                                       className="form-input"
-                                      value={product.stock}
+                                      value={currentProduct?.stock || ""}
                                       onChange={handleInputChange}
                                       min="0"
                                       required
@@ -246,17 +267,19 @@ const ProductList = () => {
                                     <button
                                       type="button"
                                       className="btn btn-secondary"
-                                      onClick=""
                                     >
                                       Cancel
                                     </button>
                                   </DialogClose>
-                                  <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                  >
-                                    Update Product
-                                  </button>
+                                  <DialogClose asChild>
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary"
+                                      onClick={handleUpdate}
+                                    >
+                                      Update Product
+                                    </button>
+                                  </DialogClose>
                                 </DialogFooter>
                               </DialogContent>
                             </form>
@@ -264,10 +287,7 @@ const ProductList = () => {
                           <Dialog>
                             <form>
                               <DialogTrigger asChild>
-                                <button
-                                  className="btn btn-sm btn-danger"
-                                  onClick={() => onDelete(product.id)}
-                                >
+                                <button className="btn btn-sm btn-danger">
                                   Delete
                                 </button>
                               </DialogTrigger>
@@ -298,6 +318,7 @@ const ProductList = () => {
                                   <button
                                     type="submit"
                                     className="btn btn-danger"
+                                    onClick={() => handleDelete(product.id)}
                                   >
                                     Delete
                                   </button>
