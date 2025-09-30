@@ -1,13 +1,15 @@
 import "./App.css";
-import ProductList from "./components/ProductList";
-import ProductForm from "./components/ProductForm";
+import { Routes, Route, Navigate } from "react-router-dom";
+import Products from "./pages/Products";
+import AddProduct from "./pages/AddProduct";
 
 const App = () => {
   return (
-    <>
-      {/* <ProductForm /> */}
-      <ProductList />
-    </>
+    <Routes>
+      <Route path="/products" element={<Products />} />
+      <Route path="/add-product" element={<AddProduct />} />
+      <Route path="/" element={<Navigate to="/products" />} />
+    </Routes>
   );
 };
 
