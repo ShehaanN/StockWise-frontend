@@ -2,7 +2,9 @@ const API_URL = "http://localhost:3000";
 
 const api = {
   getProducts: (searchTerm = "") =>
-    fetch(`${API_URL}/products?search=${searchTerm}`).then((res) => res.json()),
+    fetch(
+      `${API_URL}/products${searchTerm ? `?search=${searchTerm}` : ""}`
+    ).then((res) => res.json()),
   addProduct: (product) =>
     fetch(`${API_URL}/products`, {
       method: "POST",

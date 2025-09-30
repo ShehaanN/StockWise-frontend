@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import Sidebar from "./Sidebar";
+import { debounce } from "../lib/utils";
 
 const ProductList = () => {
   //   const products = [
@@ -122,35 +124,36 @@ const ProductList = () => {
     }
   };
 
+  //  debounced search function
+  const debouncedSearch = debounce((term) => {
+    setSearchTerm(term);
+  }, 300);
+
   return (
     <div className="app-layout">
-      <div className="sidebar">
-        <div className="sidebar-logo">📦 StockWise</div>
-        <ul className="sidebar-nav">
-          <li>
-            <a href="#" className="active">
-              Products
-            </a>
-          </li>
-          <li>
-            <a href="#" className="">
-              Add Product
-            </a>
-          </li>
-        </ul>
-      </div>
+      <Sidebar activeItem="products" />
       <div className="main-content">
         <div className="page-header">
           <h1 className="page-title">All Products</h1>
         </div>
-        <div className="search-filters flex justify-end">
-          <input
-            type="text"
-            className="form-input search-input"
-            placeholder="Search products by name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+        <div className="search-filters flex justify-end items-center">
+          <div className="relative">
+            <input
+              type="text"
+              className="form-input search-input"
+              placeholder="Search products by name..."
+              value={searchTerm}
+              onChange={(e) => debouncedSearch(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                onClick={() => setSearchTerm("")}
+              >
+                ✖
+              </button>
+            )}
+          </div>
         </div>
         <div className="card">
           <div className="card-header">
@@ -164,7 +167,7 @@ const ProductList = () => {
             <table className="table">
               <thead>
                 <tr>
-                  <th>ID</th>
+                  <th>#</th>
                   <th>Product Name</th>
                   <th>Price</th>
                   <th>Stock</th>
@@ -174,9 +177,9 @@ const ProductList = () => {
               </thead>
               <tbody>
                 {productsPerPage.length > 0 ? (
-                  productsPerPage.map((product) => (
+                  productsPerPage.map((product, index) => (
                     <tr key={product.id}>
-                      <td>{product.id}</td>
+                      <td>{indexOfFirstProduct + index + 1}</td>
                       <td>
                         <strong>{product.name}</strong>
                       </td>
