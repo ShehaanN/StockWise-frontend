@@ -7,6 +7,14 @@ const Sidebar = ({ activeItem }) => {
       <ul className="sidebar-nav">
         <li>
           <Link
+            to="/sales-stock"
+            className={activeItem === "salesStock" ? "active" : ""}
+          >
+            Sales & Stock
+          </Link>
+        </li>
+        <li>
+          <Link
             to="/products"
             className={activeItem === "products" ? "active" : ""}
           >
