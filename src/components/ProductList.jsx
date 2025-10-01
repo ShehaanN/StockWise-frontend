@@ -12,32 +12,15 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import Sidebar from "./Sidebar";
 import { debounce } from "../lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const ProductList = () => {
-  //   const products = [
-  //     { id: 1, name: "Wireless Mouse", price: 25.99, stock: 15 },
-  //     { id: 2, name: "Mechanical Keyboard", price: 89.99, stock: 5 },
-  //     { id: 3, name: "HD Monitor", price: 199.99, stock: 0 },
-  //     { id: 4, name: "USB-C Hub", price: 45.0, stock: 8 },
-  //     { id: 5, name: "External Hard Drive", price: 120.5, stock: 20 },
-  //     { id: 6, name: "Webcam", price: 75.0, stock: 12 },
-  //     { id: 7, name: "Gaming Chair", price: 150.0, stock: 3 },
-  //     { id: 8, name: "Laptop Stand", price: 30.0, stock: 25 },
-  //     { id: 9, name: "Bluetooth Speaker", price: 60.0, stock: 0 },
-  //     { id: 10, name: "Smartphone Charger", price: 20.0, stock: 18 },
-  //     { id: 11, name: "Noise-Cancelling Headphones", price: 199.99, stock: 7 },
-  //     { id: 12, name: "Portable SSD", price: 150.0, stock: 10 },
-  //     { id: 13, name: "Fitness Tracker", price: 99.99, stock: 14 },
-  //     { id: 14, name: "Smart Home Hub", price: 130.0, stock: 4 },
-  //     { id: 15, name: "4K Action Camera", price: 250.0, stock: 6 },
-  //     { id: 16, name: "E-Reader", price: 120.0, stock: 9 },
-  //     { id: 17, name: "Wireless Earbuds", price: 80.0, stock: 11 },
-  //     { id: 18, name: "VR Headset", price: 300.0, stock: 2 },
-  //     { id: 19, name: "Smartwatch", price: 220.0, stock: 13 },
-  //     { id: 20, name: "Tablet", price: 350.0, stock: 0 },
-  //   ];
+  const navigate = useNavigate();
+
   const [currentProduct, setCurrentProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -88,11 +71,16 @@ const ProductList = () => {
   }, [searchTerm]);
 
   const fetchProducts = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const data = await api.getProducts(searchTerm);
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setError("Failed to fetch products");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -118,6 +106,7 @@ const ProductList = () => {
       await api.updateProduct(currentProduct.id, poductToUpdate);
       fetchProducts();
       setCurrentProduct(null);
+
       console.log("Product updated successfully");
     } catch (error) {
       console.error("Error updating product:", error);
@@ -147,7 +136,7 @@ const ProductList = () => {
             />
             {searchTerm && (
               <button
-                className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 gap-2"
                 onClick={() => setSearchTerm("")}
               >
                 ✖
@@ -155,224 +144,251 @@ const ProductList = () => {
             )}
           </div>
         </div>
-        <div className="card">
-          <div className="card-header">
-            <h3>
-              Products (Showing {indexOfFirstProduct + 1}-
-              {Math.min(indexOfLastProduct, products.length)} of{" "}
-              {products.length} items)
-            </h3>
+        {isLoading && <p>Loading products...</p>}
+        {error && (
+          <div
+            className="card"
+            style={{
+              padding: "1rem",
+              color: "#ef4444",
+              backgroundColor: "#fee2e2",
+            }}
+          >
+            {error}
           </div>
-          <div className="card-body" style={{ padding: 0 }}>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Product Name</th>
-                  <th>Price</th>
-                  <th>Stock</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productsPerPage.length > 0 ? (
-                  productsPerPage.map((product, index) => (
-                    <tr key={product.id}>
-                      <td>{indexOfFirstProduct + index + 1}</td>
-                      <td>
-                        <strong>{product.name}</strong>
-                      </td>
-                      <td>${parseFloat(product.price).toFixed(2)}</td>
-                      <td>{product.stock}</td>
-                      <td>
-                        {product.stock === 0 ? (
-                          <span
-                            className="status"
-                            style={{ background: "#fee2e2", color: "#991b1b" }}
-                          >
-                            Out of Stock
-                          </span>
-                        ) : product.stock < 10 ? (
-                          <span className="status status-low">Low Stock</span>
-                        ) : (
-                          <span className="status status-medium">In Stock</span>
-                        )}
-                      </td>
-                      <td>
-                        <div className="product-actions">
-                          <Dialog>
-                            <form>
-                              <DialogTrigger asChild>
-                                <button
-                                  className="btn btn-sm btn-outline"
-                                  onClick={() => setCurrentProduct(product)}
-                                >
-                                  Edit
-                                </button>
-                              </DialogTrigger>
-                              <DialogContent
-                                style={{ width: "500px", padding: "20px" }}
-                              >
-                                <DialogHeader>
-                                  <DialogTitle>Edit Product</DialogTitle>
-                                  <DialogDescription>
-                                    Make changes to your product here. Click
-                                    save when you&apos;re done.
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="grid gap-4">
-                                  <div className="grid gap-3">
-                                    <label className="form-label">
-                                      Product Name *
-                                    </label>
-                                    <input
-                                      type="text"
-                                      name="name"
-                                      className="form-input"
-                                      value={currentProduct?.name || ""}
-                                      onChange={handleInputChange}
-                                      required
-                                    />
-                                  </div>
-                                  <div className="grid gap-3">
-                                    <label className="form-label">
-                                      Price *
-                                    </label>
-                                    <input
-                                      type="number"
-                                      name="price"
-                                      className="form-input"
-                                      value={currentProduct?.price || ""}
-                                      onChange={handleInputChange}
-                                      step="0.01"
-                                      min="0"
-                                      required
-                                    />
-                                  </div>
-                                  <div className="grid gap-3">
-                                    <label className="form-label">
-                                      Stock Quantity *
-                                    </label>
-                                    <input
-                                      type="number"
-                                      name="stock"
-                                      className="form-input"
-                                      value={currentProduct?.stock || ""}
-                                      onChange={handleInputChange}
-                                      min="0"
-                                      required
-                                    />
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <button
-                                      type="button"
-                                      className="btn btn-secondary"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </DialogClose>
-                                  <DialogClose asChild>
-                                    <button
-                                      type="button"
-                                      className="btn btn-primary"
-                                      onClick={handleUpdate}
-                                    >
-                                      Update Product
-                                    </button>
-                                  </DialogClose>
-                                </DialogFooter>
-                              </DialogContent>
-                            </form>
-                          </Dialog>
-                          <Dialog>
-                            <form>
-                              <DialogTrigger asChild>
-                                <button className="btn btn-sm btn-danger">
-                                  Delete
-                                </button>
-                              </DialogTrigger>
-                              <DialogContent
-                                style={{ width: "500px", padding: "20px" }}
-                              >
-                                <DialogHeader>
-                                  <DialogTitle>Delete Product</DialogTitle>
-                                </DialogHeader>
-                                <div className="grid gap-4">
-                                  <div className="grid gap-3">
-                                    <p>
-                                      Are you sure you want to delete this{" "}
-                                      {product.name} product?
-                                    </p>
-                                  </div>
-                                </div>
-                                <DialogFooter>
-                                  <DialogClose asChild>
-                                    <button
-                                      type="button"
-                                      className="btn btn-secondary"
-                                      onClick=""
-                                    >
-                                      Cancel
-                                    </button>
-                                  </DialogClose>
-                                  <button
-                                    type="submit"
-                                    className="btn btn-danger"
-                                    onClick={() => handleDelete(product.id)}
-                                  >
-                                    Delete
-                                  </button>
-                                </DialogFooter>
-                              </DialogContent>
-                            </form>
-                          </Dialog>
-                        </div>
-                      </td>
+        )}
+        {!isLoading && !error && (
+          <>
+            <div className="card">
+              <div className="card-header">
+                <h3>
+                  Products (Showing {indexOfFirstProduct + 1}-
+                  {Math.min(indexOfLastProduct, products.length)} of{" "}
+                  {products.length} items)
+                </h3>
+              </div>
+              <div className="card-body" style={{ padding: 0 }}>
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Product Name</th>
+                      <th>Price</th>
+                      <th>Stock</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="5">No products found.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div
-          className="pagination flex justify-end  items-center"
-          style={{ marginTop: "1rem" }}
-        >
-          <button
-            className="btn btn-secondary btn-sm "
-            onClick={prevPage}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              className={`btn btn-sm ${
-                currentPage === index + 1 ? "btn-primary" : "btn-secondary"
-              }`}
-              onClick={() => goToPage(index + 1)}
+                  </thead>
+                  <tbody>
+                    {productsPerPage.length > 0 ? (
+                      productsPerPage.map((product, index) => (
+                        <tr key={product.id}>
+                          <td>{indexOfFirstProduct + index + 1}</td>
+                          <td>
+                            <strong>{product.name}</strong>
+                          </td>
+                          <td>${parseFloat(product.price).toFixed(2)}</td>
+                          <td>{product.stock}</td>
+                          <td>
+                            {product.stock === 0 ? (
+                              <span
+                                className="status"
+                                style={{
+                                  background: "#fee2e2",
+                                  color: "#991b1b",
+                                }}
+                              >
+                                Out of Stock
+                              </span>
+                            ) : product.stock < 10 ? (
+                              <span className="status status-low">
+                                Low Stock
+                              </span>
+                            ) : (
+                              <span className="status status-medium">
+                                In Stock
+                              </span>
+                            )}
+                          </td>
+                          <td>
+                            <div className="product-actions">
+                              <Dialog>
+                                <form>
+                                  <DialogTrigger asChild>
+                                    <button
+                                      className="btn btn-sm btn-outline"
+                                      onClick={() => setCurrentProduct(product)}
+                                    >
+                                      Edit
+                                    </button>
+                                  </DialogTrigger>
+                                  <DialogContent
+                                    style={{ width: "500px", padding: "20px" }}
+                                  >
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Product</DialogTitle>
+                                      <DialogDescription>
+                                        Make changes to your product here. Click
+                                        save when you&apos;re done.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4">
+                                      <div className="grid gap-3">
+                                        <label className="form-label">
+                                          Product Name *
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="name"
+                                          className="form-input"
+                                          value={currentProduct?.name || ""}
+                                          onChange={handleInputChange}
+                                          required
+                                        />
+                                      </div>
+                                      <div className="grid gap-3">
+                                        <label className="form-label">
+                                          Price *
+                                        </label>
+                                        <input
+                                          type="number"
+                                          name="price"
+                                          className="form-input"
+                                          value={currentProduct?.price || ""}
+                                          onChange={handleInputChange}
+                                          step="0.01"
+                                          min="0"
+                                          required
+                                        />
+                                      </div>
+                                      <div className="grid gap-3">
+                                        <label className="form-label">
+                                          Stock Quantity *
+                                        </label>
+                                        <input
+                                          type="number"
+                                          name="stock"
+                                          className="form-input"
+                                          value={currentProduct?.stock || ""}
+                                          onChange={handleInputChange}
+                                          min="0"
+                                          required
+                                        />
+                                      </div>
+                                    </div>
+                                    <DialogFooter>
+                                      <DialogClose asChild>
+                                        <button
+                                          type="button"
+                                          className="btn btn-secondary"
+                                        >
+                                          Cancel
+                                        </button>
+                                      </DialogClose>
+                                      <DialogClose asChild>
+                                        <button
+                                          type="button"
+                                          className="btn btn-primary"
+                                          onClick={() => (
+                                            handleUpdate(event),
+                                            navigate("/products")
+                                          )}
+                                        >
+                                          Update Product
+                                        </button>
+                                      </DialogClose>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </form>
+                              </Dialog>
+                              <Dialog>
+                                <form>
+                                  <DialogTrigger asChild>
+                                    <button className="btn btn-sm btn-danger">
+                                      Delete
+                                    </button>
+                                  </DialogTrigger>
+                                  <DialogContent
+                                    style={{ width: "500px", padding: "20px" }}
+                                  >
+                                    <DialogHeader>
+                                      <DialogTitle>Delete Product</DialogTitle>
+                                    </DialogHeader>
+                                    <div className="grid gap-4">
+                                      <div className="grid gap-3">
+                                        <p>
+                                          Are you sure you want to delete this{" "}
+                                          {product.name} product?
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <DialogFooter>
+                                      <DialogClose asChild>
+                                        <button
+                                          type="button"
+                                          className="btn btn-secondary"
+                                          onClick=""
+                                        >
+                                          Cancel
+                                        </button>
+                                      </DialogClose>
+                                      <button
+                                        type="submit"
+                                        className="btn btn-danger"
+                                        onClick={() => handleDelete(product.id)}
+                                      >
+                                        Delete
+                                      </button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </form>
+                              </Dialog>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5">No products found.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div
+              className="pagination flex justify-end  items-center"
+              style={{ marginTop: "1rem" }}
             >
-              {index + 1}
-            </button>
-          ))}
+              <button
+                className="btn btn-secondary btn-sm "
+                onClick={prevPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index + 1}
+                  className={`btn btn-sm ${
+                    currentPage === index + 1 ? "btn-primary" : "btn-secondary"
+                  }`}
+                  onClick={() => goToPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              ))}
 
-          <button
-            className="btn btn-secondary btn-sm "
-            onClick={nextPage}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
+              <button
+                className="btn btn-secondary btn-sm "
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
