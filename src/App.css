@@ -168,14 +168,14 @@ body {
 
 /* Buttons */
 .btn {
-  padding: 0.85rem 1.5rem;
+  padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
   margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
   display: flex;
   text-decoration: none;
   gap: 0.5rem;
@@ -221,6 +221,39 @@ body {
   margin-bottom: 1rem;
 }
 
+.form-sale-stock-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.form-sale-stock-header {
+  padding: 1.5rem;
+  background: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+}
+.form-sale-stock-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0;
+}
+
+.add-items-container h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+.add-items-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  gap: 1.5rem;
+  align-items: end;
+}
+
 .form-label {
   display: block;
   margin-bottom: 0.5rem;
@@ -241,6 +274,19 @@ body {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+/* single stock movement form */
+.single-stock-movement-form-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.bulk-sale-form-actions,
+.single-stock-movement-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 /* Cards */
@@ -270,7 +316,7 @@ body {
 .table th,
 .table td {
   padding: 1rem;
-  text-align: left;
+  text-align: right;
   border-bottom: 1px solid #e2e8f0;
 }
 
@@ -358,6 +404,11 @@ body {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
+.stat-card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .stat-value {
   font-size: 2rem;
   font-weight: 700;
@@ -367,7 +418,7 @@ body {
 .stat-label {
   color: #64748b;
   font-size: 0.875rem;
-  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Search and Filters */
