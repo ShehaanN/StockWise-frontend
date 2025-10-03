@@ -171,25 +171,27 @@ const ProductList = () => {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Product Name</th>
+                      <th style={{ textAlign: "right" }}>#</th>
+                      <th style={{ textAlign: "right" }}>Product Name</th>
                       <th>Price</th>
                       <th>Stock</th>
-                      <th>Status</th>
-                      <th>Actions</th>
+                      <th style={{ textAlign: "center" }}>Status</th>
+                      <th style={{ textAlign: "center" }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {productsPerPage.length > 0 ? (
                       productsPerPage.map((product, index) => (
                         <tr key={product.id}>
-                          <td>{indexOfFirstProduct + index + 1}</td>
-                          <td>
+                          <td style={{ textAlign: "right" }}>
+                            {indexOfFirstProduct + index + 1}
+                          </td>
+                          <td style={{ textAlign: "right" }}>
                             <strong>{product.name}</strong>
                           </td>
                           <td>${parseFloat(product.price).toFixed(2)}</td>
                           <td>{product.stock}</td>
-                          <td>
+                          <td style={{ textAlign: "center" }}>
                             {product.stock === 0 ? (
                               <span
                                 className="status"
@@ -210,8 +212,15 @@ const ProductList = () => {
                               </span>
                             )}
                           </td>
-                          <td>
-                            <div className="product-actions">
+                          <td style={{ textAlign: "right" }}>
+                            <div
+                              className="product-actions"
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                              }}
+                            >
                               <Dialog>
                                 <form>
                                   <DialogTrigger asChild>

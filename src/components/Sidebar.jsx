@@ -7,10 +7,10 @@ const Sidebar = ({ activeItem }) => {
       <ul className="sidebar-nav">
         <li>
           <Link
-            to="/sales-stock"
-            className={activeItem === "salesStock" ? "active" : ""}
+            to="/dashboard"
+            className={activeItem === "dashboard" ? "active" : ""}
           >
-            Sales & Stock
+            Dashboard
           </Link>
         </li>
         <li>

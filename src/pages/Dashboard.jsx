@@ -10,7 +10,7 @@ import {
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
 
-export default function SalesStock() {
+const Dashboard = () => {
   const [products, setProducts] = useState([
     { id: 1, name: "Laptop Computer", stock: 25, price: 899.99 },
     { id: 2, name: "Wireless Mouse", stock: 45, price: 29.99 },
@@ -164,7 +164,7 @@ export default function SalesStock() {
   return (
     <div className="app-layout">
       {/* Sidebar */}
-      <Sidebar activeItem="salesStock" />
+      <Sidebar activeItem="dashboard" />
 
       {/* Main Content */}
       <div className="main-content" style={{ padding: "2rem 4rem" }}>
@@ -836,4 +836,6 @@ export default function SalesStock() {
       </div>
     </div>
   );
-}
+};
+
+export default Dashboard;
