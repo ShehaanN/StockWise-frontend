@@ -82,7 +82,9 @@ const ProductForm = () => {
                   required
                 />
               </div>
-              <div style={{ marginTop: "2.5rem" }}>
+              <div
+                style={{ marginTop: "2.5rem", display: "flex", gap: "1rem" }}
+              >
                 <button type="submit" className="btn btn-primary">
                   Add Product
                 </button>

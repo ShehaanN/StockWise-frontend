@@ -4,6 +4,7 @@ import Products from "./pages/Products";
 import AddProduct from "./pages/AddProduct";
 import Dashboard from "./pages/Dashboard";
 import ProductDetails from "./pages/ProductDetails";
+import Settings from "./pages/Settings";
 
 const App = () => {
   return (
@@ -12,6 +13,7 @@ const App = () => {
       <Route path="/add-product" element={<AddProduct />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/products/:id" element={<ProductDetails />} />
+      <Route path="/settings" element={<Settings />} />
 
       <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>

@@ -12,76 +12,7 @@ body {
   line-height: 1.6;
 }
 
-.design-showcase {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem;
-}
-
-.design-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.design-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 0.5rem;
-}
-
-.design-header p {
-  font-size: 1.1rem;
-  color: #64748b;
-}
-
-.design-section {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-  overflow: hidden;
-}
-
-.section-header {
-  padding: 1.5rem 2rem;
-  background: #f1f5f9;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.section-header h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.section-content {
-  padding: 2rem;
-}
-
 /* Color Palette */
-.color-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-}
-
-.color-item {
-  text-align: center;
-}
-
-.color-swatch {
-  width: 100%;
-  height: 120px;
-  border-radius: 12px;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
 
 .primary {
   background: #3b82f6;
@@ -106,66 +37,6 @@ body {
   background: #0f172a;
 }
 
-/* Typography */
-.typography-samples {
-  display: grid;
-  gap: 1.5rem;
-}
-
-.typo-item {
-  padding: 1rem 0;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.typo-item:last-child {
-  border-bottom: none;
-}
-
-.typo-item h1 {
-  font-size: 2.25rem;
-  font-weight: 700;
-}
-.typo-item h2 {
-  font-size: 1.875rem;
-  font-weight: 600;
-}
-.typo-item h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-.typo-item h4 {
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-.typo-item .body {
-  font-size: 1rem;
-  color: #64748b;
-}
-.typo-item .small {
-  font-size: 0.875rem;
-  color: #94a3b8;
-}
-
-/* Components */
-.components-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.component-demo {
-  padding: 1.5rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-}
-
-.component-demo h3 {
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
 /* Buttons */
 .btn {
   padding: 0.75rem 1.5rem;
@@ -186,7 +57,15 @@ body {
   background: #3b82f6;
   color: white;
 }
+.btn-primary-view {
+  background: #3b82f6;
+  color: white;
+  opacity: 0.9;
+}
 
+.btn-primary-view:hover {
+  background: #2563eb;
+}
 .btn-primary:hover {
   background: #2563eb;
 }
@@ -390,6 +269,13 @@ body {
   font-weight: 700;
 }
 
+/* ProductDetails page */
+.product-details-main-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -475,13 +361,5 @@ body {
 
   .sidebar {
     display: none;
-  }
-
-  .components-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .color-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }

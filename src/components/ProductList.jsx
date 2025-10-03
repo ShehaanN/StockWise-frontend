@@ -221,6 +221,14 @@ const ProductList = () => {
                                 gap: "0.5rem",
                               }}
                             >
+                              <button
+                                className="btn btn-sm btn-primary-view"
+                                onClick={() =>
+                                  navigate(`/products/${product.id}`)
+                                }
+                              >
+                                View
+                              </button>
                               <Dialog>
                                 <form>
                                   <DialogTrigger asChild>

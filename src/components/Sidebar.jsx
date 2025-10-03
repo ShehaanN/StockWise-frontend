@@ -29,6 +29,14 @@ const Sidebar = ({ activeItem }) => {
             Add Product
           </Link>
         </li>
+        <li>
+          <Link
+            to="/settings"
+            className={activeItem === "settings" ? "active" : ""}
+          >
+            Settings
+          </Link>
+        </li>
       </ul>
     </div>
   );
