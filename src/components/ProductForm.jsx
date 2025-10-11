@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 const ProductForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    productName: "",
+    name: "",
     category: "",
     description: "",
     price: "",
@@ -74,9 +74,9 @@ const ProductForm = () => {
                   <label className="form-label">Product Name *</label>
                   <input
                     type="text"
-                    name="productName"
+                    name="name"
                     className="form-input"
-                    value={formData.productName}
+                    value={formData.name}
                     onChange={handleInputChange}
                     required
                   />
@@ -149,19 +149,17 @@ const ProductForm = () => {
                     </div>
                     {/* image */}
                     <div className="form-group">
-                      <label className="form-label">Image URL *</label>
+                      <label className="form-label">Product Image</label>
                       <input
                         type="text"
-                        name="imageUrl"
-                        className="form-input"
+                        name="image"
                         value={formData.imageUrl}
-                        onChange={handleInputChange}
-                        required
+                        className="form-input"
                       />
                     </div>
                     {/* barcode */}
                     <div className="form-group">
-                      <label className="form-label">Barcode *</label>
+                      <label className="form-label">Barcode</label>
                       <input
                         type="text"
                         name="barcode"

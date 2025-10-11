@@ -8,17 +8,171 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
-import api from "../services/api";
+import { useState } from "react";
+// import api from "../services/api";
 import Sidebar from "./Sidebar";
-import { debounce } from "../lib/utils";
+// import { debounce } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
+import dummyImage from "../assets/dummyimg.jpg";
 
 const ProductList = () => {
   const navigate = useNavigate();
 
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      name: "Laptop",
+      price: 999.99,
+      stock: 15,
+      description:
+        "A high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptop",
+      category: "Electronics",
+      barcode: "1234567890123",
+      image:
+        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+    },
+    {
+      id: 2,
+      name: "Mouse",
+      price: 19.99,
+      stock: 50,
+      description: "Wireless mouse",
+      category: "Accessories",
+      barcode: "1234567890124",
+      image: "",
+    },
+    {
+      id: 3,
+      name: "Keyboard",
+      price: 49.99,
+      stock: 30,
+      description: "Mechanical keyboard",
+      category: "Accessories",
+      barcode: "1234567890125",
+      image: "",
+    },
+    {
+      id: 4,
+      name: "Monitor",
+      price: 199.99,
+      stock: 20,
+      description: "24-inch monitor",
+      category: "Electronics",
+      barcode: "1234567890126",
+      image: "",
+    },
+    {
+      id: 5,
+      name: "Desk Chair",
+      price: 89.99,
+      stock: 10,
+      description: "Ergonomic desk chair",
+      category: "Office",
+      barcode: "1234567890127",
+      image: "",
+    },
+    {
+      id: 6,
+      name: "Notebook",
+      price: 2.99,
+      stock: 100,
+      description: "College-ruled notebook",
+      category: "Books",
+      barcode: "1234567890128",
+      image: "",
+    },
+    {
+      id: 7,
+      name: "Pen Set",
+      price: 5.99,
+      stock: 200,
+      description: "Set of 10 pens",
+      category: "Office",
+      barcode: "1234567890129",
+      image: "",
+    },
+    {
+      id: 8,
+      name: "Headphones",
+      price: 59.99,
+      stock: 25,
+      description: "Over-ear headphones",
+      category: "Electronics",
+      barcode: "1234567890130",
+      image: "",
+    },
+    {
+      id: 9,
+      name: "USB Drive",
+      price: 14.99,
+      stock: 75,
+      description: "32GB USB flash drive",
+      category: "Accessories",
+      barcode: "1234567890131",
+      image: "",
+    },
+    {
+      id: 10,
+      name: "Backpack",
+      price: 39.99,
+      stock: 40,
+      description: "Durable backpack",
+      category: "Accessories",
+      barcode: "1234567890132",
+      image: "",
+    },
+    {
+      id: 11,
+      name: "Smartphone",
+      price: 699.99,
+      stock: 18,
+      description: "Latest model smartphone",
+      category: "Electronics",
+      barcode: "1234567890133",
+      image: "",
+    },
+    {
+      id: 12,
+      name: "Tablet",
+      price: 299.99,
+      stock: 22,
+      description: "10-inch tablet",
+      category: "Electronics",
+      barcode: "1234567890134",
+      image: "",
+    },
+    {
+      id: 13,
+      name: "Charger",
+      price: 24.99,
+      stock: 60,
+      description: "Fast charging adapter",
+      category: "Accessories",
+      barcode: "1234567890135",
+      image: "",
+    },
+    {
+      id: 14,
+      name: "Desk Lamp",
+      price: 29.99,
+      stock: 35,
+      description: "LED desk lamp",
+      category: "Office",
+      barcode: "1234567890136",
+      image: "",
+    },
+    {
+      id: 15,
+      name: "Planner",
+      price: 12.99,
+      stock: 80,
+      description: "2024 daily planner",
+      category: "Books",
+      barcode: "1234567890137",
+      image: "",
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -66,57 +220,57 @@ const ProductList = () => {
 
   console.log("Current Product:", currentProduct);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [searchTerm]);
+  // useEffect(() => {
+  //   fetchProducts();
+  // }, [searchTerm]);
 
-  const fetchProducts = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await api.getProducts(searchTerm);
-      setProducts(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Failed to fetch products");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const fetchProducts = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //   try {
+  //     const data = await api.getProducts(searchTerm);
+  //     setProducts(data);
+  //   } catch (error) {
+  //     console.error("Error fetching products:", error);
+  //     setError("Failed to fetch products");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const handleDelete = async (productId) => {
-    try {
-      await api.deleteProduct(productId);
-      fetchProducts();
-    } catch (error) {
-      console.error("Error deleting product:", error);
-    }
-  };
+  // const handleDelete = async (productId) => {
+  //   try {
+  //     await api.deleteProduct(productId);
+  //     fetchProducts();
+  //   } catch (error) {
+  //     console.error("Error deleting product:", error);
+  //   }
+  // };
 
-  const handleUpdate = async (event) => {
-    event.preventDefault();
-    if (!currentProduct || !currentProduct.id) return;
-    try {
-      const poductToUpdate = {
-        name: currentProduct.name,
-        price: currentProduct.price,
-        stock: currentProduct.stock,
-      };
+  // const handleUpdate = async (event) => {
+  //   event.preventDefault();
+  //   if (!currentProduct || !currentProduct.id) return;
+  //   try {
+  //     const poductToUpdate = {
+  //       name: currentProduct.name,
+  //       price: currentProduct.price,
+  //       stock: currentProduct.stock,
+  //     };
 
-      await api.updateProduct(currentProduct.id, poductToUpdate);
-      fetchProducts();
-      setCurrentProduct(null);
+  //     await api.updateProduct(currentProduct.id, poductToUpdate);
+  //     fetchProducts();
+  //     setCurrentProduct(null);
 
-      console.log("Product updated successfully");
-    } catch (error) {
-      console.error("Error updating product:", error);
-    }
-  };
+  //     console.log("Product updated successfully");
+  //   } catch (error) {
+  //     console.error("Error updating product:", error);
+  //   }
+  // };
 
   //  debounced search function
-  const debouncedSearch = debounce((term) => {
-    setSearchTerm(term);
-  }, 300);
+  // const debouncedSearch = debounce((term) => {
+  //   setSearchTerm(term);
+  // }, 300);
 
   return (
     <div className="app-layout">
@@ -131,8 +285,8 @@ const ProductList = () => {
               type="text"
               className="form-input search-input"
               placeholder="Search products by name..."
-              value={searchTerm}
-              onChange={(e) => debouncedSearch(e.target.value)}
+              // value={searchTerm}
+              // onChange={(e) => debouncedSearch(e.target.value)}
             />
             {searchTerm && (
               <button
@@ -171,11 +325,17 @@ const ProductList = () => {
                 <table className="table">
                   <thead>
                     <tr>
-                      <th style={{ textAlign: "right" }}>#</th>
-                      <th style={{ textAlign: "right" }}>Product Name</th>
-                      <th>Price</th>
-                      <th>Stock</th>
-                      <th style={{ textAlign: "center" }}>Status</th>
+                      <th style={{ textAlign: "left" }}>#</th>
+                      <th style={{ textAlign: "left" }}>Image</th>
+                      <th style={{ textAlign: "left" }}>Name</th>
+                      <th style={{ textAlign: "left" }}>Category</th>
+                      <th style={{ textAlign: "left" }}>Price</th>
+                      <th style={{ textAlign: "left" }}>Stock</th>
+                      <th style={{ textAlign: "left" }}>Status</th>
+                      <th style={{ textAlign: "left" }}>Barcode</th>
+                      <th style={{ textAlign: "left", width: "350px" }}>
+                        Description
+                      </th>
                       <th style={{ textAlign: "center" }}>Actions</th>
                     </tr>
                   </thead>
@@ -183,15 +343,41 @@ const ProductList = () => {
                     {productsPerPage.length > 0 ? (
                       productsPerPage.map((product, index) => (
                         <tr key={product.id}>
-                          <td style={{ textAlign: "right" }}>
-                            {indexOfFirstProduct + index + 1}
+                          <td>{indexOfFirstProduct + index + 1}</td>
+                          <td>
+                            {product.image ? (
+                              <img
+                                src={product.image}
+                                alt={product.name}
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  objectFit: "cover",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src={dummyImage}
+                                alt={product.name}
+                                style={{
+                                  width: "40px",
+                                  height: "40px",
+                                  objectFit: "cover",
+                                  borderRadius: "4px",
+                                }}
+                              />
+                            )}
                           </td>
-                          <td style={{ textAlign: "right" }}>
+                          <td>
                             <strong>{product.name}</strong>
+                          </td>
+                          <td>
+                            <strong>{product.category}</strong>
                           </td>
                           <td>${parseFloat(product.price).toFixed(2)}</td>
                           <td>{product.stock}</td>
-                          <td style={{ textAlign: "center" }}>
+                          <td>
                             {product.stock === 0 ? (
                               <span
                                 className="status"
@@ -212,12 +398,18 @@ const ProductList = () => {
                               </span>
                             )}
                           </td>
-                          <td style={{ textAlign: "right" }}>
+                          <td>{product.barcode}</td>
+                          <td>
+                            {product.description.length > 50
+                              ? `${product.description.substring(0, 50)}...`
+                              : product.description}
+                          </td>
+                          <td>
                             <div
                               className="product-actions"
                               style={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "flex-end",
                                 gap: "0.5rem",
                               }}
                             >
@@ -240,7 +432,12 @@ const ProductList = () => {
                                     </button>
                                   </DialogTrigger>
                                   <DialogContent
-                                    style={{ width: "500px", padding: "20px" }}
+                                    style={{
+                                      width: "100%",
+                                      padding: "20px",
+                                      maxHeight: "80vh",
+                                      overflowY: "auto",
+                                    }}
                                   >
                                     <DialogHeader>
                                       <DialogTitle>Edit Product</DialogTitle>
@@ -250,6 +447,7 @@ const ProductList = () => {
                                       </DialogDescription>
                                     </DialogHeader>
                                     <div className="grid gap-4">
+                                      {/* name */}
                                       <div className="grid gap-3">
                                         <label className="form-label">
                                           Product Name *
@@ -263,33 +461,75 @@ const ProductList = () => {
                                           required
                                         />
                                       </div>
+                                      {/* category */}
+                                      <div className="grid gap-3">
+                                        <label className="form-label">
+                                          Category *
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="category"
+                                          className="form-input"
+                                          value={currentProduct?.category || ""}
+                                          onChange={handleInputChange}
+                                          required
+                                        />
+                                      </div>
+                                      {/* price */}
                                       <div className="grid gap-3">
                                         <label className="form-label">
                                           Price *
                                         </label>
                                         <input
-                                          type="number"
-                                          name="price"
+                                          type="text"
+                                          name="name"
                                           className="form-input"
-                                          value={currentProduct?.price || ""}
+                                          value={currentProduct?.name || ""}
                                           onChange={handleInputChange}
-                                          step="0.01"
-                                          min="0"
                                           required
                                         />
                                       </div>
+                                      {/* description */}
                                       <div className="grid gap-3">
                                         <label className="form-label">
-                                          Stock Quantity *
+                                          Description *
+                                        </label>
+                                        <textarea
+                                          type="text"
+                                          name="description"
+                                          className="form-input"
+                                          value={
+                                            currentProduct?.description || ""
+                                          }
+                                          onChange={handleInputChange}
+                                          required
+                                        />
+                                      </div>
+
+                                      {/* image */}
+                                      <div className="grid gap-3">
+                                        <label className="form-label">
+                                          Product Image
                                         </label>
                                         <input
-                                          type="number"
-                                          name="stock"
+                                          type="text"
+                                          name="image"
                                           className="form-input"
-                                          value={currentProduct?.stock || ""}
+                                          value={currentProduct?.image || ""}
                                           onChange={handleInputChange}
-                                          min="0"
-                                          required
+                                        />
+                                      </div>
+                                      {/* barcode */}
+                                      <div className="grid gap-3">
+                                        <label className="form-label">
+                                          Barcode
+                                        </label>
+                                        <input
+                                          type="text"
+                                          name="barcode"
+                                          className="form-input"
+                                          value={currentProduct?.barcode || ""}
+                                          onChange={handleInputChange}
                                         />
                                       </div>
                                     </div>
@@ -306,10 +546,10 @@ const ProductList = () => {
                                         <button
                                           type="button"
                                           className="btn btn-primary"
-                                          onClick={() => (
-                                            handleUpdate(event),
-                                            navigate("/products")
-                                          )}
+                                          // onClick={() => (
+                                          //   handleUpdate(event),
+                                          //   navigate("/products")
+                                          // )}
                                         >
                                           Update Product
                                         </button>

@@ -1,5 +1,6 @@
 import {
   Plus,
+  Minus,
   TrendingUp,
   TrendingDown,
   Package,
@@ -27,13 +28,19 @@ const Dashboard = () => {
     reason: "",
   });
 
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showAddStock, setShowAddStock] = useState(false);
   const [showBulkSale, setShowBulkSale] = useState(false);
 
   const [bulkSaleItems, setBulkSaleItems] = useState([]);
+  const [bulkAddStockItems, setBulkAddStockItems] = useState([]);
   const [bulkSaleReason, setBulkSaleReason] = useState("");
+  const [bulkAddStockReason, setBulkAddStockReason] = useState("");
 
   const bulkSaleTotal = bulkSaleItems.reduce(
+    (sum, item) => sum + item.total,
+    0
+  );
+  const bulkAddStockTotal = bulkAddStockItems.reduce(
     (sum, item) => sum + item.total,
     0
   );
@@ -88,10 +95,59 @@ const Dashboard = () => {
     setFormData({ ...formData, productId: "", quantity: "" });
     setShowAddForm(false);
   };
+  const handleAddToBulkStock = () => {
+    if (!formData.productId || !formData.quantity) {
+      alert("Please select a product and enter quantity.");
+      return;
+    }
+
+    const product = products.find((p) => p.id === parseInt(formData.productId));
+    const quantity = parseInt(formData.quantity);
+
+    if (quantity > product.stock) {
+      alert(`Insufficient stock! Available: ${product.stock} units.`);
+      return;
+    }
+
+    const existingItem = bulkAddStockItems.find(
+      (item) => item.productId === product.id
+    );
+
+    if (existingItem) {
+      const updatedItems = bulkAddStockItems.map((item) =>
+        item.productId === product.id
+          ? {
+              ...item,
+              quantity: item.quantity + quantity,
+              total: (item.quantity + quantity) * item.price,
+            }
+          : item
+      );
+      setBulkAddStockItems(updatedItems);
+    } else {
+      setBulkAddStockItems([
+        ...bulkAddStockItems,
+        {
+          productId: product.id,
+          productName: product.name,
+          price: product.price,
+          quantity: quantity,
+          total: quantity * product.price,
+        },
+      ]);
+    }
+    setFormData({ ...formData, productId: "", quantity: "" });
+    setShowAddForm(false);
+  };
 
   const handleRemoveFromBulkSale = (productId) => {
     setBulkSaleItems(
       bulkSaleItems.filter((item) => item.productId !== productId)
+    );
+  };
+  const handleRemoveFromBulkAddStock = (productId) => {
+    setBulkAddStockItems(
+      bulkAddStockItems.filter((item) => item.productId !== productId)
     );
   };
 
@@ -129,35 +185,38 @@ const Dashboard = () => {
       setShowBulkSale(false);
     });
   };
-
-  const handleAddStock = () => {
-    if (!formData.productId || !formData.quantity || !formData.reason) {
-      alert("Please fill in all fields.");
+  const handleCompleteAddStock = () => {
+    if (bulkAddStockItems.length === 0) {
+      alert("Please add items to the stock.");
       return;
     }
+    if (!bulkAddStockReason) {
+      alert("Please enter a reason for the stock addition");
+      return;
+    }
+    const invoiceNumber = `INV${Date.now()}`;
 
-    const product = products.find((p) => p.id === parseInt(formData.productId));
-    const quantity = parseInt(formData.quantity);
-    const currentBalance =
-      product.stock + (formData.type === "IN" ? quantity : -quantity);
+    bulkAddStockItems.forEach((item) => {
+      const product = products.find((p) => p.id === item.productId);
+      const currentBalance = product.stock + item.quantity;
 
-    const newEntry = {
-      id: stockHistory.length + 1,
-      date: new Date().toISOString().split("T")[0],
-      product: product.name,
-      type: formData.type,
-      quantity: quantity,
-      reason: formData.reason,
-      price: product.price,
-      balance: Math.max(0, currentBalance),
-    };
+      const newEntry = {
+        id: stockHistory.length + bulkAddStockItems.indexOf(item) + 1,
+        date: new Date().toISOString().split("T")[0],
+        product: item.productName,
+        type: "IN",
+        quantity: item.quantity,
+        reason: `Bulk Add stock - ${bulkAddStockReason} - ${invoiceNumber}`,
+        price: item.price,
+        balance: Math.max(0, currentBalance),
+      };
 
-    setStockHistory((prev) => [newEntry, ...prev]);
-    setFormData({
-      productId: "",
-      type: "IN",
-      quantity: "",
-      reason: "",
+      setStockHistory((prev) => [newEntry, ...prev]);
+
+      alert("Bulk add Stock completed!");
+      setBulkAddStockItems([]);
+      setBulkAddStockReason("");
+      setShowAddStock(false);
     });
   };
 
@@ -180,22 +239,22 @@ const Dashboard = () => {
             <button
               className="btn btn-success"
               onClick={() => {
-                setShowBulkSale(!showBulkSale);
-                setShowAddForm(false);
-              }}
-            >
-              <ShoppingCart size={20} />
-              Bulk Sale
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                setShowAddForm(!showAddForm);
+                setShowAddStock(!showAddStock);
                 setShowBulkSale(false);
               }}
             >
-              <Plus size={20} />
-              Add Stock Movement
+              <TrendingUp size={20} />
+              <span className="font-semibold"> Add Stock</span>
+            </button>
+            <button
+              className="btn btn-warn"
+              onClick={() => {
+                setShowBulkSale(!showBulkSale);
+                setShowAddStock(false);
+              }}
+            >
+              <TrendingDown size={20} />
+              <span className="font-semibold"> Stock OUT</span>
             </button>
           </div>
         </div>
@@ -271,7 +330,7 @@ const Dashboard = () => {
         {showBulkSale && (
           <div className="form-sale-stock-container">
             <div className="form-sale-stock-header">
-              <h2>Bulk Sale</h2>
+              <h2>Bulk Stock OUT</h2>
             </div>
             {/* content */}
             <div style={{ padding: "2rem" }}>
@@ -280,7 +339,7 @@ const Dashboard = () => {
                 className="add-items-container"
                 style={{ marginBottom: "2rem" }}
               >
-                <h3>Add Items to Sale</h3>
+                <h3>Add Items to Out</h3>
 
                 <div className="add-items-form">
                   <div>
@@ -522,139 +581,253 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-        {/* Single stock movement form */}
-        {showAddForm && (
+        {/*  add stock movement form */}
+        {showAddStock && (
           <div className="form-sale-stock-container">
             <div className="form-sale-stock-header">
-              <h2>Add Stock Movement</h2>
+              <h2>Bulk Stock IN</h2>
             </div>
             {/* content */}
             <div style={{ padding: "2rem" }}>
-              {/* form body */}
-              <div className="single-stock-movement-form-content">
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      fontWeight: "500",
-                      color: "#374151",
-                    }}
+              {/* Add items section */}
+              <div
+                className="add-items-container"
+                style={{ marginBottom: "2rem" }}
+              >
+                <h3>Add Items to Stock</h3>
+
+                <div className="add-items-form">
+                  <div>
+                    <label className="form-label">Product</label>
+                    <select
+                      value={formData.productId}
+                      onChange={(e) =>
+                        setFormData({ ...formData, productId: e.target.value })
+                      }
+                      className="form-input"
+                    >
+                      <option value="">Select a product</option>
+                      {products.map((product) => (
+                        <option key={product.id} value={product.id}>
+                          {product.name} (Stock: {product.stock})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="form-label">Quantity</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={formData.quantity}
+                      onChange={(e) =>
+                        setFormData({ ...formData, quantity: e.target.value })
+                      }
+                      className="form-input"
+                      style={{ padding: "0.61rem" }}
+                      placeholder="Qty"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleAddToBulkStock}
+                    className="btn btn-primary"
                   >
-                    Product
-                  </label>
-                  <select
-                    value={formData.productId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, productId: e.target.value })
-                    }
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "8px",
-                      fontSize: "1rem",
-                    }}
-                  >
-                    <option value="">Select a product</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.name} (Stock: {product.stock})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      fontWeight: "500",
-                      color: "#374151",
-                    }}
-                  >
-                    Type
-                  </label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) =>
-                      setFormData({ ...formData, type: e.target.value })
-                    }
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "8px",
-                      fontSize: "1rem",
-                    }}
-                  >
-                    <option value="IN">IN - Stock Purchase</option>
-                    <option value="OUT">OUT - Sale</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      fontWeight: "500",
-                      color: "#374151",
-                    }}
-                  >
-                    Quantity
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={formData.quantity}
-                    onChange={(e) =>
-                      setFormData({ ...formData, quantity: e.target.value })
-                    }
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "8px",
-                      fontSize: "1rem",
-                    }}
-                    placeholder="Enter quantity"
-                  />
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      fontWeight: "500",
-                      color: "#374151",
-                    }}
-                  >
-                    Reason / Invoice
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.reason}
-                    onChange={(e) =>
-                      setFormData({ ...formData, reason: e.target.value })
-                    }
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      border: "1px solid #d1d5db",
-                      borderRadius: "8px",
-                      fontSize: "1rem",
-                    }}
-                    placeholder="e.g., Invoice #1234, Supplier restock"
-                  />
+                    <Plus size={18} />
+                    Add Item
+                  </button>
                 </div>
               </div>
-              {/* form actions */}
-              <div className="single-stock-movement-form-actions">
-                <button onClick={handleAddStock} className="btn btn-success">
-                  Save Movement
+              {/* Items List */}
+              {bulkAddStockItems.length > 0 && (
+                <div style={{ marginBottom: "2rem" }}>
+                  <h3
+                    style={{
+                      fontSize: "1.125rem",
+                      fontWeight: "600",
+                      color: "#0f172a",
+                      marginBottom: "1rem",
+                    }}
+                  >
+                    Items in stock
+                  </h3>
+                  <div
+                    style={{
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "8px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <table className="table" style={{ marginTop: 0 }}>
+                      <thead style={{ background: "#f8fafc" }}>
+                        <tr>
+                          <th
+                            style={{
+                              padding: "0.75rem",
+                              textAlign: "left",
+                            }}
+                          >
+                            Product
+                          </th>
+                          <th
+                            style={{
+                              padding: "0.75rem",
+                              textAlign: "right",
+                            }}
+                          >
+                            Price
+                          </th>
+                          <th
+                            style={{
+                              padding: "0.75rem",
+                              textAlign: "right",
+                            }}
+                          >
+                            Quantity
+                          </th>
+                          <th
+                            style={{
+                              padding: "0.75rem",
+                              textAlign: "right",
+                            }}
+                          >
+                            Total
+                          </th>
+                          <th
+                            style={{
+                              padding: "0.75rem",
+                              textAlign: "center",
+                            }}
+                          >
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bulkAddStockItems.map((item) => (
+                          <tr
+                            key={item.productId}
+                            style={{ borderTop: "1px solid #e2e8f0" }}
+                          >
+                            <td
+                              style={{
+                                padding: "0.75rem",
+                                fontWeight: "500",
+                                textAlign: "left",
+                              }}
+                            >
+                              {item.productName}
+                            </td>
+                            <td
+                              style={{
+                                padding: "0.75rem",
+                                textAlign: "right",
+                                color: "#64748b",
+                              }}
+                            >
+                              ${item.price.toFixed(2)}
+                            </td>
+                            <td
+                              style={{
+                                padding: "0.75rem",
+                                textAlign: "right",
+                                fontWeight: "600",
+                              }}
+                            >
+                              {item.quantity}
+                            </td>
+                            <td
+                              style={{
+                                padding: "0.75rem",
+                                textAlign: "right",
+                                fontWeight: "600",
+                              }}
+                            >
+                              ${item.total.toFixed(2)}
+                            </td>
+                            <td
+                              style={{
+                                padding: "0.75rem",
+                                textAlign: "center",
+                              }}
+                            >
+                              <button
+                                onClick={() =>
+                                  handleRemoveFromBulkAddStock(item.productId)
+                                }
+                                style={{
+                                  background: "transparent",
+                                  border: "none",
+                                  color: "#ef4444",
+                                  cursor: "pointer",
+                                  padding: "0.25rem",
+                                }}
+                              >
+                                <Trash2 size={18} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        <tr
+                          style={{
+                            background: "#f8fafc",
+                            borderTop: "2px solid #e2e8f0",
+                          }}
+                        >
+                          <td
+                            colSpan="3"
+                            style={{
+                              padding: "0.75rem",
+                              fontWeight: "600",
+                              textAlign: "right",
+                            }}
+                          >
+                            Total:
+                          </td>
+                          <td
+                            style={{
+                              padding: "0.75rem",
+                              textAlign: "right",
+                              fontWeight: "700",
+                              fontSize: "1.125rem",
+                              color: "#10b981",
+                            }}
+                          >
+                            ${bulkAddStockTotal.toFixed(2)}
+                          </td>
+                          <td></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+              {/* Invoice/Reason */}
+              <div style={{ marginBottom: "1rem" }}>
+                <label className="form-label">Invoice / Reason</label>
+                <input
+                  type="text"
+                  value={bulkAddStockReason}
+                  onChange={(e) => setBulkAddStockReason(e.target.value)}
+                  className="form-input"
+                  placeholder="e.g., Invoice #1234, Customer Order"
+                />
+              </div>
+              {/* Action Buttons */}
+              <div className="bulk-sale-form-actions">
+                <button
+                  onClick={handleCompleteAddStock}
+                  className="btn btn-success"
+                >
+                  Complete Add Stock
                 </button>
                 <button
-                  onClick={() => setShowAddForm(false)}
+                  onClick={() => {
+                    setShowAddStock(false);
+                    setBulkAddStockItems([]);
+                    setBulkAddStockReason("");
+                  }}
                   className="btn btn-secondary"
                 >
                   Cancel

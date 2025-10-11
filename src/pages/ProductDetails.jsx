@@ -1,16 +1,9 @@
 import { useParams, useNavigate } from "react-router-dom";
 
-import {
-  ArrowLeft,
-  Edit2,
-  Trash2,
-  TrendingUp,
-  Package,
-  DollarSign,
-  Calendar,
-} from "lucide-react";
+import { ArrowLeft, Edit2, Trash2 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
+import dummyImg from "../assets/dummyimg.jpg";
 
 const ProductDetails = () => {
   const navigate = useNavigate();
@@ -18,17 +11,17 @@ const ProductDetails = () => {
   const product = {
     id,
     name: "MacBook Pro 16-inch",
-    sku: "SP-001",
+
     createdDate: "2023-10-01",
     category: "Electronics",
     description:
       " The MacBook Pro 16-inch is a high-performance laptop designed for professionals. It features a stunning Retina display, powerful M1 Pro or M1 Max chips, and an extended battery life, making it ideal for demanding tasks such as video editing, software development, and graphic design.",
     barcode: "123456789012",
-    weight: "1.5 kg",
-    dimensions: "25 x 15 x 2 cm",
+
     price: 2499.99,
-    stock: 15,
-    lowStockThreshold: 10,
+    stock: 10,
+    imageUrl:
+      "https://buyabans.com/cdn-cgi/imagedelivery/OgVIyabXh1YHxwM0lBwqgA/product/6959/new_aszxdcvt.png/public",
     notes: "Check supplier for next shipment date.",
     totalSold: 150,
     revenue: 374998.5,
@@ -41,6 +34,15 @@ const ProductDetails = () => {
   const handleSaveNotes = () => {
     console.log("Saved notes:", notes);
     alert("Notes saved successfully!");
+  };
+
+  const handleDelete = () => {
+    alert("Product deleted successfully!");
+    navigate("/products");
+  };
+  const handleEdit = () => {
+    // pop up edit dialog (not implemented)
+    alert("Edit product feature coming soon!");
   };
   return (
     <div className="app-layout">
@@ -111,26 +113,8 @@ const ProductDetails = () => {
               {product.name}
             </h1>
             <p style={{ color: "#64748b", margin: 0 }}>
-              SKU: {product.sku} | Created: {product.createdDate}
+              Created: {product.createdDate}
             </p>
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
-            <button
-              className="btn btn-outline"
-              // onClick={handleEdit}
-              style={{ padding: "0.5rem 1rem" }}
-            >
-              <Edit2 size={18} />
-              {/* Edit Product */}
-            </button>
-            <button
-              // onClick={handleDelete}
-              className="btn btn-danger"
-              style={{ padding: "0.5rem 1rem" }}
-            >
-              <Trash2 size={18} />
-              {/* Delete */}
-            </button>
           </div>
         </div>
 
@@ -170,7 +154,7 @@ const ProductDetails = () => {
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "370px 1fr",
+                    gridTemplateColumns: "1fr 1fr",
                     gap: "2rem",
                   }}
                 >
@@ -180,7 +164,7 @@ const ProductDetails = () => {
                       style={{
                         width: "350px",
                         height: "320px",
-                        background: "#f1f5f9",
+
                         borderRadius: "12px",
                         display: "flex",
                         alignItems: "center",
@@ -191,7 +175,7 @@ const ProductDetails = () => {
                       }}
                     >
                       <img
-                        src="../../public/macbookpro.png"
+                        src={product.imageUrl || dummyImg}
                         alt={product.name}
                         style={{
                           maxWidth: "100%",
@@ -201,66 +185,92 @@ const ProductDetails = () => {
                       />
                     </div>
                   </div>
-
                   {/* Product Details-1 */}
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "1.5rem",
-                      marginBottom: "1.5rem",
-                    }}
-                  >
-                    <div>
-                      <label
-                        style={{
-                          fontWeight: "600",
-                          color: "#374151",
-                          display: "block",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        Category
-                      </label>
-                      <span
-                        className="status-high"
-                        style={{
-                          padding: "0.25rem 0.75rem",
-                          borderRadius: "50px",
-                          fontSize: "0.875rem",
-                          fontWeight: "600",
-                        }}
-                      >
-                        {product.category}
-                      </span>
-                    </div>
-                    <div>
-                      <label
-                        style={{
-                          fontWeight: "600",
-                          color: "#374151",
-                          display: "block",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        Status
-                      </label>
-                      {product.stock === 0 ? (
-                        <span
-                          className="status"
+                  <div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "1rem",
+                      }}
+                    >
+                      {/* category */}
+                      <div style={{ minWidth: "120px" }}>
+                        <label
                           style={{
-                            background: "#fee2e2",
-                            color: "#991b1b",
+                            fontWeight: "600",
+                            color: "#374151",
+                            display: "block",
+                            marginBottom: "0.25rem",
                           }}
                         >
-                          Out of Stock
+                          Category
+                        </label>
+                        <span
+                          className="status-high"
+                          style={{
+                            padding: "0.25rem 0.75rem",
+                            borderRadius: "50px",
+                            display: "inline-block",
+                            fontSize: "0.875rem",
+                            fontWeight: "600",
+                          }}
+                        >
+                          {product.category}
                         </span>
-                      ) : product.stock < 10 ? (
-                        <span className="status status-low">Low Stock</span>
-                      ) : (
-                        <span className="status status-medium">In Stock</span>
-                      )}
+                      </div>
+                      {/* status */}
+                      <div style={{ minWidth: "120px" }}>
+                        <label
+                          style={{
+                            fontWeight: "600",
+                            color: "#374151",
+                            display: "block",
+                            marginBottom: "0.5rem",
+                          }}
+                        >
+                          Status
+                        </label>
+                        {product.stock === 0 ? (
+                          <span
+                            className="status"
+                            style={{
+                              background: "#fee2e2",
+                              color: "#991b1b",
+                            }}
+                          >
+                            Out of Stock
+                          </span>
+                        ) : product.stock < 10 ? (
+                          <span className="status status-low">Low Stock</span>
+                        ) : (
+                          <span className="status status-medium">In Stock</span>
+                        )}
+                      </div>
+                    </div>
+                    {/* barcode */}
+                    <div style={{ minWidth: "120px", marginTop: "2rem" }}>
+                      <label
+                        style={{
+                          fontWeight: "600",
+                          color: "#374151",
+
+                          display: "block",
+                          marginBottom: "0.5rem",
+                        }}
+                      >
+                        Barcode
+                      </label>
+                      <p
+                        style={{
+                          color: "#64748b",
+                          fontFamily: "monospace",
+                          fontSize: "1rem",
+                          margin: 0,
+                        }}
+                      >
+                        {product.barcode}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -286,66 +296,6 @@ const ProductDetails = () => {
                     >
                       {product.description}
                     </p>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(3, 1fr)",
-                      gap: "1rem",
-                    }}
-                  >
-                    <div>
-                      <label
-                        style={{
-                          fontWeight: "600",
-                          color: "#374151",
-                          display: "block",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        Barcode
-                      </label>
-                      <p
-                        style={{
-                          color: "#64748b",
-                          fontFamily: "monospace",
-                          margin: 0,
-                        }}
-                      >
-                        {product.barcode}
-                      </p>
-                    </div>
-                    <div>
-                      <label
-                        style={{
-                          fontWeight: "600",
-                          color: "#374151",
-                          display: "block",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        Weight
-                      </label>
-                      <p style={{ color: "#64748b", margin: 0 }}>
-                        {product.weight}
-                      </p>
-                    </div>
-                    <div>
-                      <label
-                        style={{
-                          fontWeight: "600",
-                          color: "#374151",
-                          display: "block",
-                          marginBottom: "0.5rem",
-                        }}
-                      >
-                        Dimensions
-                      </label>
-                      <p style={{ color: "#64748b", margin: 0 }}>
-                        {product.dimensions}
-                      </p>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -459,11 +409,11 @@ const ProductDetails = () => {
                     Low Stock Alert
                   </label>
                   <p style={{ color: "#64748b", margin: 0 }}>
-                    Alert when below {product.lowStockThreshold} units
+                    Alert when below 15 units
                   </p>
                 </div>
 
-                {product.stock < product.lowStockThreshold && (
+                {product.stock < 15 && (
                   <div
                     style={{
                       background: "#fef3c7",

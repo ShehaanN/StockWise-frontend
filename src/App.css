@@ -89,6 +89,11 @@ body {
   color: white;
 }
 
+.btn-warn {
+  background: #f59e0b;
+  color: white;
+}
+
 .btn-outline {
   background: transparent;
   border: 1px solid #3b82f6;
@@ -195,7 +200,7 @@ body {
 .table th,
 .table td {
   padding: 1rem;
-  text-align: right;
+  /* text-align: right; */
   border-bottom: 1px solid #e2e8f0;
 }
 
