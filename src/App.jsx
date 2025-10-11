@@ -5,6 +5,7 @@ import AddProduct from "./pages/AddProduct";
 import Dashboard from "./pages/Dashboard";
 import ProductDetails from "./pages/ProductDetails";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/products/:id" element={<ProductDetails />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/login" element={<Login />} />
 
       <Route path="/" element={<Navigate to="/dashboard" />} />
     </Routes>
