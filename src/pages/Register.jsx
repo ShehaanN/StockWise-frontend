@@ -2,24 +2,37 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const Login = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const Register = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const handleLogin = () => {
-    alert("Login successful!");
-    setIsLoggedIn(true);
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [isSignedUp, setIsSignedUp] = useState(false);
+  console.log(formData);
+
+  const handleChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  const handleSignUp = () => {
+    if (agreeTerms) {
+      alert("Registration successful!");
+      setIsSignedUp(true);
+    } else {
+      alert("Please agree to the terms and conditions.");
+    }
   };
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      handleLogin();
+      handleSignUp();
     }
   };
 
-  if (isLoggedIn) {
+  if (isSignedUp) {
     return (
       <div
         style={{
@@ -65,106 +78,18 @@ const Login = () => {
               marginBottom: "0.5rem",
             }}
           >
-            Welcome Back!
+            Welcome!
           </h1>
           <p style={{ color: "#64748b", margin: 0 }}>
-            You have successfully logged in to Inventory Manager.
+            Your account has been created successfully.
           </p>
         </div>
       </div>
     );
   }
-
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex" }}>
-      {/* Left Side - Branding */}
-      <div
-        style={{
-          flex: 1,
-          background: "#0f172a",
-          padding: "4rem",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-        }}
-      >
-        <div style={{ maxWidth: "500px" }}>
-          <div style={{ fontSize: "4rem", marginBottom: "2rem" }}>📦</div>
-          <h1
-            style={{
-              fontSize: "2.5rem",
-              fontWeight: "700",
-              marginBottom: "1rem",
-              color: "white",
-            }}
-          >
-            Inventory Manager
-          </h1>
-          <p
-            style={{
-              fontSize: "1.125rem",
-              color: "#94a3b8",
-              lineHeight: "1.6",
-            }}
-          >
-            Manage your products, track stock levels, and streamline your
-            inventory operations all in one place.
-          </p>
-          <div style={{ marginTop: "3rem", display: "grid", gap: "1rem" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  background: "#1e293b",
-                  borderRadius: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ✓
-              </div>
-              <span style={{ color: "#cbd5e1" }}>Real-time stock tracking</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  background: "#1e293b",
-                  borderRadius: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ✓
-              </div>
-              <span style={{ color: "#cbd5e1" }}>Sales management</span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <div
-                style={{
-                  width: "40px",
-                  height: "40px",
-                  background: "#1e293b",
-                  borderRadius: "8px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ✓
-              </div>
-              <span style={{ color: "#cbd5e1" }}>Low stock alerts</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Right Side - Login Form */}
+      {/* Left Side - Sign Up Form */}
       <div
         style={{
           flex: 1,
@@ -184,14 +109,14 @@ const Login = () => {
                 marginBottom: "0.5rem",
               }}
             >
-              Sign in to your account
+              Create an account
             </h2>
             <p style={{ color: "#64748b", fontSize: "0.875rem" }}>
-              Enter your credentials to access your dashboard
+              Enter your details to create your account
             </p>
           </div>
 
-          {/* Login Form */}
+          {/* left side- Registration Form */}
           <div
             style={{
               background: "white",
@@ -200,6 +125,38 @@ const Login = () => {
               boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
             }}
           >
+            {/* Name Field */}
+            <div style={{ marginBottom: "1.25rem" }}>
+              <label
+                style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  fontWeight: "500",
+                  color: "#374151",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                value={formData.name}
+                onChange={(e) => handleChange("name", e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  transition: "border-color 0.2s",
+                  outline: "none",
+                }}
+                placeholder="Enter your name"
+                onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
+                onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
+              />
+            </div>
+
             {/* Email Field */}
             <div style={{ marginBottom: "1.25rem" }}>
               <label
@@ -211,12 +168,12 @@ const Login = () => {
                   fontSize: "0.875rem",
                 }}
               >
-                Email Address
+                Email
               </label>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleChange("email", e.target.value)}
                 style={{
                   width: "100%",
                   padding: "0.75rem",
@@ -226,7 +183,7 @@ const Login = () => {
                   transition: "border-color 0.2s",
                   outline: "none",
                 }}
-                placeholder="name@company.com"
+                placeholder="Enter your mail"
                 onFocus={(e) => (e.target.style.borderColor = "#3b82f6")}
                 onBlur={(e) => (e.target.style.borderColor = "#d1d5db")}
               />
@@ -248,9 +205,8 @@ const Login = () => {
               <div style={{ position: "relative" }}>
                 <input
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  onKeyPress={handleKeyPress}
+                  value={formData.password}
+                  onChange={(e) => handleChange("password", e.target.value)}
                   style={{
                     width: "100%",
                     padding: "0.75rem",
@@ -287,15 +243,8 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1.5rem",
-              }}
-            >
+            {/* Terms & Conditions */}
+            <div style={{ marginBottom: "1.5rem" }}>
               <label
                 style={{
                   display: "flex",
@@ -306,33 +255,25 @@ const Login = () => {
               >
                 <input
                   type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
+                  checked={agreeTerms}
+                  onChange={(e) => setAgreeTerms(e.target.checked)}
                   style={{
                     marginRight: "0.5rem",
                     cursor: "pointer",
                     width: "16px",
                     height: "16px",
+                    accentColor: "#0f172a",
                   }}
                 />
-                <span style={{ color: "#374151" }}>Remember me</span>
+                <span style={{ color: "#374151" }}>
+                  I agree to all the Terms & Conditions
+                </span>
               </label>
-              <a
-                href="#"
-                style={{
-                  color: "#3b82f6",
-                  textDecoration: "none",
-                  fontSize: "0.875rem",
-                  fontWeight: "500",
-                }}
-              >
-                Forgot password?
-              </a>
             </div>
 
-            {/* Login Button */}
+            {/* Sign Up Button */}
             <button
-              onClick={handleLogin}
+              onClick={handleSignUp}
               style={{
                 width: "100%",
                 background: "#0f172a",
@@ -344,28 +285,133 @@ const Login = () => {
                 fontWeight: "600",
                 cursor: "pointer",
                 transition: "background 0.2s",
+                marginBottom: "1.5rem",
               }}
+              onKeyPress={handleKeyPress}
               onMouseOver={(e) => (e.target.style.background = "#1e293b")}
               onMouseOut={(e) => (e.target.style.background = "#0f172a")}
             >
-              Sign In
+              Sign up
             </button>
 
-            {/* Sign Up Link */}
-            <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
+            {/* Log In Link */}
+            <div style={{ textAlign: "center" }}>
               <p style={{ color: "#64748b", fontSize: "0.875rem", margin: 0 }}>
-                Don't have an account?{" "}
+                Already have an account?{" "}
                 <Link
-                  to="/register"
+                  to="/login"
                   style={{
                     color: "#0f172a",
-                    textDecoration: "none",
+                    textDecoration: "underline",
                     fontWeight: "600",
                   }}
                 >
-                  Create an account
+                  Log in
                 </Link>
               </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Right Side  */}
+      <div
+        style={{
+          flex: 1,
+          background: "#0f172a",
+          padding: "4rem",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "white",
+        }}
+      >
+        <div style={{ maxWidth: "500px" }}>
+          <div style={{ fontSize: "4rem", marginBottom: "2rem" }}>📦</div>
+          <h1
+            style={{
+              fontSize: "2.5rem",
+              fontWeight: "700",
+              marginBottom: "1rem",
+              color: "white",
+            }}
+          >
+            Start Your Journey
+          </h1>
+          <p
+            style={{
+              fontSize: "1.125rem",
+              color: "#94a3b8",
+              lineHeight: "1.6",
+            }}
+          >
+            Join thousands of businesses managing their inventory efficiently.
+            Get started in minutes.
+          </p>
+          <div style={{ marginTop: "3rem", display: "grid", gap: "1rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  background: "#1e293b",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✓
+              </div>
+              <span style={{ color: "#cbd5e1" }}>Real-time stock tracking</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  background: "#1e293b",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✓
+              </div>
+              <span style={{ color: "#cbd5e1" }}>Complete Dashboard</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  background: "#1e293b",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✓
+              </div>
+              <span style={{ color: "#cbd5e1" }}>Sales management</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  background: "#1e293b",
+                  borderRadius: "8px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✓
+              </div>
+              <span style={{ color: "#cbd5e1" }}>Smart Alerts</span>
             </div>
           </div>
         </div>
@@ -374,4 +420,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
