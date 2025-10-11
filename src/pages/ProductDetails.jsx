@@ -1,6 +1,14 @@
 import { useParams, useNavigate } from "react-router-dom";
 
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit2,
+  Trash2,
+  TrendingUp,
+  Package,
+  DollarSign,
+  Calendar,
+} from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import { useState } from "react";
 
@@ -76,26 +84,56 @@ const ProductDetails = () => {
         {/* Product Title with Metadata */}
         <div
           style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
             marginBottom: "2rem",
             paddingBottom: "1rem",
             borderBottom: "1px solid #e2e8f0",
           }}
         >
-          <h1
+          <div
             style={{
-              fontSize: "2rem",
-              fontWeight: "700",
-              color: "#0f172a",
-              margin: 0,
-              marginBottom: "0.5rem",
+              marginBottom: "2rem",
+              paddingBottom: "1rem",
+              borderBottom: "1px solid #e2e8f0",
             }}
           >
-            {product.name}
-          </h1>
-          <p style={{ color: "#64748b", margin: 0 }}>
-            SKU: {product.sku} | Created: {product.createdDate}
-          </p>
+            <h1
+              style={{
+                fontSize: "2rem",
+                fontWeight: "700",
+                color: "#0f172a",
+                margin: 0,
+                marginBottom: "0.5rem",
+              }}
+            >
+              {product.name}
+            </h1>
+            <p style={{ color: "#64748b", margin: 0 }}>
+              SKU: {product.sku} | Created: {product.createdDate}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              className="btn btn-outline"
+              // onClick={handleEdit}
+              style={{ padding: "0.5rem 1rem" }}
+            >
+              <Edit2 size={18} />
+              {/* Edit Product */}
+            </button>
+            <button
+              // onClick={handleDelete}
+              className="btn btn-danger"
+              style={{ padding: "0.5rem 1rem" }}
+            >
+              <Trash2 size={18} />
+              {/* Delete */}
+            </button>
+          </div>
         </div>
+
         {/* main grid */}
         <div className="product-details-main-grid">
           {/* Left Column - Product Details  */}

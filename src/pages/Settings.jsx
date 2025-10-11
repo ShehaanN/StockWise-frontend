@@ -87,6 +87,9 @@ const Settings = () => {
     }
   };
 
+  const handleSaveGeneral = () => {
+    alert("General settings saved successfully!");
+  };
   return (
     <div className="app-layout">
       <Sidebar activeItem="settings" />
@@ -94,7 +97,13 @@ const Settings = () => {
         {/* page header */}
         <div className="page-header">
           <h1 className="page-title">Settings</h1>
-          <button className="btn btn-primary">
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              if (activeTab === "general") handleSaveGeneral();
+              else if (activeTab === "account") handleChangePassword();
+            }}
+          >
             <Save size={20} /> Save Changes
           </button>
         </div>
