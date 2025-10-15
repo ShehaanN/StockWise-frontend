@@ -1,16 +1,37 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const handleLogin = () => {
-    alert("Login successful!");
+  const [error, setError] = useState("");
+
+  const { login } = useAuth();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
     setIsLoggedIn(true);
+    setError("");
+    try {
+      const data = await api.login(email, password);
+      if (data.token) {
+        // login(`Bearer ${data.token}`);
+        login(data.token);
+        navigate("/");
+      } else {
+        setError(data.message || "Login failed!");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
+      console.error(error);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -18,62 +39,6 @@ const Login = () => {
       handleLogin();
     }
   };
-
-  if (isLoggedIn) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#f8fafc",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2rem",
-        }}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: "16px",
-            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-            padding: "3rem",
-            maxWidth: "450px",
-            width: "100%",
-            textAlign: "center",
-          }}
-        >
-          <div
-            style={{
-              width: "80px",
-              height: "80px",
-              background: "#d1fae5",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 1.5rem",
-              fontSize: "2.5rem",
-            }}
-          >
-            ✓
-          </div>
-          <h1
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: "700",
-              color: "#0f172a",
-              marginBottom: "0.5rem",
-            }}
-          >
-            Welcome Back!
-          </h1>
-          <p style={{ color: "#64748b", margin: 0 }}>
-            You have successfully logged in to Inventory Manager.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex" }}>

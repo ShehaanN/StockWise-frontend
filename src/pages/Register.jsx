@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,16 +13,28 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isSignedUp, setIsSignedUp] = useState(false);
-  console.log(formData);
+  const [error, setError] = useState("");
+  console.log(formData, "terms", agreeTerms);
 
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    setError("");
     if (agreeTerms) {
-      alert("Registration successful!");
-      setIsSignedUp(true);
+      try {
+        setIsSignedUp(true);
+        await api.register(formData.email, formData.password);
+        alert("Registration successful! Please login.");
+        navigate("/login");
+      } catch (error) {
+        setError(
+          error.message || "Registration failed. Username may already be taken."
+        );
+        console.error(error);
+      }
     } else {
       alert("Please agree to the terms and conditions.");
     }
