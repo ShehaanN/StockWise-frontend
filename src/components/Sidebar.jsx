@@ -1,43 +1,52 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
-const Sidebar = ({ activeItem }) => {
+const Sidebar = () => {
+  const { logout } = useAuth();
   return (
     <div className="sidebar">
       <div className="sidebar-logo">📦 StockWise</div>
+
       <ul className="sidebar-nav">
         <li>
-          <Link
-            to="/dashboard"
-            className={activeItem === "dashboard" ? "active" : ""}
-          >
-            Dashboard
-          </Link>
+          <NavLink to="/">Dashboard</NavLink>
         </li>
         <li>
-          <Link
-            to="/products"
-            className={activeItem === "products" ? "active" : ""}
-          >
-            Products
-          </Link>
+          <NavLink to="/products">Products</NavLink>
         </li>
         <li>
-          <Link
-            to="/add-product"
-            className={activeItem === "addProduct" ? "active" : ""}
-          >
-            Add Product
-          </Link>
+          <NavLink to="/add-product">Add Product</NavLink>
         </li>
         <li>
-          <Link
-            to="/settings"
-            className={activeItem === "settings" ? "active" : ""}
-          >
-            Settings
-          </Link>
+          <NavLink to="/settings">Settings</NavLink>
         </li>
       </ul>
+      <div
+        style={{
+          marginTop: "2rem",
+          paddingTop: "1rem",
+          borderTop: "1px solid #414e64",
+        }}
+      >
+        <button
+          onClick={logout}
+          style={{
+            display: "flex",
+
+            alignItems: "center",
+            gap: "0.5rem",
+            cursor: "pointer",
+            padding: "0.75rem 1rem",
+            backgroundColor: "#1e293b",
+            borderRadius: "8px",
+            width: "100%",
+          }}
+        >
+          <LogOut />
+          Log out
+        </button>
+      </div>
     </div>
   );
 };
