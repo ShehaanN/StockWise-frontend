@@ -1,14 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import { Plus, Trash2, Edit2, Save } from "lucide-react";
+import api from "../services/api";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("general");
-  const [generalSettings, setGeneralSettings] = useState({
-    businessName: "My Store",
-    currency: "LKR",
-    lowStockThreshold: 10,
-  });
+  const [generalSettings, setGeneralSettings] = useState([]);
   const tabs = [
     { id: "general", label: "General" },
     { id: "categories", label: "Categories" },
@@ -16,78 +13,114 @@ const Settings = () => {
     { id: "account", label: "Account" },
   ];
 
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Electronics" },
-    { id: 2, name: "Accessories" },
-    { id: 3, name: "Office Supplies" },
-    { id: 4, name: "Books" },
-  ]);
-  const [notifications, setNotifications] = useState({
-    lowStockAlerts: true,
-
-    newProductAlerts: true,
-  });
+  const [categories, setCategories] = useState([]);
 
   const [accountSettings, setAccountSettings] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  console.log("generalSettings", generalSettings);
+
   const [newCategory, setNewCategory] = useState("");
   const [editingCategory, setEditingCategory] = useState(null);
+  const [error, setError] = useState("");
 
-  const handleChangePassword = () => {
+  useEffect(() => {
+    fetchCategories();
+    fetchAppSettings();
+  }, []);
+
+  const fetchCategories = async () => {
+    const data = await api.getAllCategories();
+    setCategories(data);
+  };
+
+  const fetchAppSettings = async () => {
+    const data = await api.getAppSettings();
+    setGeneralSettings(data);
+  };
+
+  const handleChangePassword = async () => {
     if (
       !accountSettings.currentPassword ||
       !accountSettings.newPassword ||
       !accountSettings.confirmPassword
     ) {
-      alert("Please fill in all password fields");
+      setError("Please fill in all password fields");
       return;
     }
     if (accountSettings.newPassword !== accountSettings.confirmPassword) {
-      alert("New passwords do not match");
+      setError("New passwords do not match");
       return;
     }
-    if (accountSettings.newPassword.length < 8) {
-      alert("Password must be at least 8 characters long");
+    if (accountSettings.newPassword.length < 6) {
+      setError("New password must be at least 6 characters long.");
       return;
     }
-    alert("Password changed successfully!");
-    setAccountSettings({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    const passwords = {
+      currentPassword: accountSettings.currentPassword,
+      newPassword: accountSettings.newPassword,
+    };
+    try {
+      const response = await api.changePassword(passwords);
+
+      alert("Password changed successfully!");
+
+      setAccountSettings({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      setError(error.message || "Failed to change password.");
+    }
   };
 
   const handleEditCategory = (id) => {
     setEditingCategory(id);
   };
 
-  const handleAddCategory = () => {
-    if (newCategory.trim()) {
-      setCategories([...categories, { id: Date.now(), name: newCategory }]);
-      setNewCategory("");
+  const handleAddCategory = async () => {
+    try {
+      const cateData = { name: newCategory.trim() };
+      await api.addCategory(cateData);
+      await fetchCategories();
+    } catch (error) {
+      console.log(error);
     }
+    setNewCategory("");
   };
 
-  const handleSaveCategory = (id, newName) => {
-    setCategories(
-      categories.map((c) => (c.id === id ? { ...c, name: newName } : c))
-    );
+  const handleSaveCategory = async (id, newName) => {
+    try {
+      await api.updateCategory(id, { name: newName.trim() });
+      await fetchCategories();
+    } catch (error) {
+      console.log(error);
+    }
     setEditingCategory(null);
   };
 
-  console.log("cate:", categories);
-
-  const handleDeleteCategory = (id) => {
+  const handleDeleteCategory = async (id) => {
     if (confirm("Are you sure you want to delete this category?")) {
-      setCategories(categories.filter((c) => c.id !== id));
+      await api.deleteCategory(id);
+      await fetchCategories();
     }
   };
 
-  const handleSaveGeneral = () => {
+  const handleSaveGeneral = async () => {
+    const id = generalSettings.id;
+    const settings = {
+      businessName: generalSettings.businessName,
+      currency: generalSettings.currency,
+      lowStockThreshold: generalSettings.lowStockThreshold,
+      lowStockAlerts: generalSettings.lowStockAlerts,
+      newProductAlerts: generalSettings.newProductAlerts,
+    };
+    await api.updateAppSettings(id, settings);
+
     alert("General settings saved successfully!");
   };
   return (
@@ -187,13 +220,13 @@ const Settings = () => {
                   </label>
                   <input
                     type="text"
-                    value={generalSettings.businessName}
-                    onChange={(e) =>
-                      setGeneralSettings({
-                        ...generalSettings,
+                    value={generalSettings.businessName || ""}
+                    onChange={(e) => {
+                      setGeneralSettings((prev) => ({
+                        ...prev,
                         businessName: e.target.value,
-                      })
-                    }
+                      }));
+                    }}
                     style={{
                       width: "100%",
                       padding: "0.75rem",
@@ -215,13 +248,13 @@ const Settings = () => {
                     Currency
                   </label>
                   <select
-                    value={generalSettings.currency}
-                    onChange={(e) =>
-                      setGeneralSettings({
-                        ...generalSettings,
+                    value={generalSettings.currency || ""}
+                    onChange={(e) => {
+                      setGeneralSettings((prev) => ({
+                        ...prev,
                         currency: e.target.value,
-                      })
-                    }
+                      }));
+                    }}
                     style={{
                       width: "100%",
                       padding: "0.75rem",
@@ -251,12 +284,12 @@ const Settings = () => {
                 <input
                   type="number"
                   min="0"
-                  value={generalSettings.lowStockThreshold}
+                  value={generalSettings.lowStockThreshold || ""}
                   onChange={(e) =>
-                    setGeneralSettings({
-                      ...generalSettings,
+                    setGeneralSettings((prev) => ({
+                      ...prev,
                       lowStockThreshold: e.target.value,
-                    })
+                    }))
                   }
                   style={{
                     width: "100%",
@@ -458,94 +491,174 @@ const Settings = () => {
             </div>
             <div style={{ padding: "2rem" }}>
               <div style={{ display: "grid", gap: "1.5rem" }}>
-                {Object.entries(notifications).map(([key, value]) => (
-                  <div
-                    key={key}
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                      padding: "1.25rem",
-                      background: "#f8fafc",
-                      borderRadius: "8px",
-                      border: "1px solid #e2e8f0",
-                    }}
-                  >
-                    <div>
-                      <strong
-                        style={{
-                          display: "block",
-                          marginBottom: "0.25rem",
-                          color: "#0f172a",
-                        }}
-                      >
-                        {key === "lowStockAlerts" && "Low Stock Alerts"}
-
-                        {key === "newProductAlerts" && "New Product Alerts"}
-                      </strong>
-                      <p
-                        style={{
-                          color: "#64748b",
-                          fontSize: "0.875rem",
-                          margin: 0,
-                        }}
-                      >
-                        {key === "lowStockAlerts" &&
-                          "Get notified when products are running low"}
-
-                        {key === "newProductAlerts" &&
-                          "Get notified when new products are added"}
-                      </p>
-                    </div>
-                    <label
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "1.25rem",
+                    background: "#f8fafc",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  <div>
+                    <strong
                       style={{
-                        position: "relative",
-                        display: "inline-block",
-                        width: "52px",
-                        height: "28px",
-                        cursor: "pointer",
+                        display: "block",
+                        marginBottom: "0.25rem",
+                        color: "#0f172a",
                       }}
                     >
-                      <input
-                        type="checkbox"
-                        checked={value}
-                        onChange={(e) =>
-                          setNotifications({
-                            ...notifications,
-                            [key]: e.target.checked,
-                          })
-                        }
-                        style={{ opacity: 0, width: 0, height: 0 }}
-                      />
+                      Low Stock Alerts
+                    </strong>
+                    <p
+                      style={{
+                        color: "#64748b",
+                        fontSize: "0.875rem",
+                        margin: 0,
+                      }}
+                    >
+                      Get notified when products are running low
+                    </p>
+                  </div>
+                  <label
+                    style={{
+                      position: "relative",
+                      display: "inline-block",
+                      width: "52px",
+                      height: "28px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={generalSettings.lowStockAlerts || ""}
+                      onChange={(e) =>
+                        setGeneralSettings((prev) => ({
+                          ...prev,
+                          lowStockAlerts: e.target.checked,
+                        }))
+                      }
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: generalSettings.lowStockAlerts
+                          ? "#10b981"
+                          : "#cbd5e1",
+
+                        borderRadius: "28px",
+                        transition: "0.3s",
+                      }}
+                    >
                       <span
                         style={{
                           position: "absolute",
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          background: value ? "#10b981" : "#cbd5e1",
-                          borderRadius: "28px",
+                          content: "",
+                          height: "20px",
+                          width: "20px",
+                          left: generalSettings.lowStockAlerts ? "28px" : "4px",
+
+                          bottom: "4px",
+                          background: "white",
+                          borderRadius: "50%",
                           transition: "0.3s",
                         }}
-                      >
-                        <span
-                          style={{
-                            position: "absolute",
-                            content: "",
-                            height: "20px",
-                            width: "20px",
-                            left: value ? "28px" : "4px",
-                            bottom: "4px",
-                            background: "white",
-                            borderRadius: "50%",
-                            transition: "0.3s",
-                          }}
-                        />
-                      </span>
-                    </label>
+                      />
+                    </span>
+                  </label>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "1.25rem",
+                    background: "#f8fafc",
+                    borderRadius: "8px",
+                    border: "1px solid #e2e8f0",
+                  }}
+                >
+                  <div>
+                    <strong
+                      style={{
+                        display: "block",
+                        marginBottom: "0.25rem",
+                        color: "#0f172a",
+                      }}
+                    >
+                      New Product Alerts
+                    </strong>
+                    <p
+                      style={{
+                        color: "#64748b",
+                        fontSize: "0.875rem",
+                        margin: 0,
+                      }}
+                    >
+                      Get notified when new products are added
+                    </p>
                   </div>
-                ))}
+                  <label
+                    style={{
+                      position: "relative",
+                      display: "inline-block",
+                      width: "52px",
+                      height: "28px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={generalSettings.newProductAlerts || ""}
+                      onChange={(e) =>
+                        setGeneralSettings((prev) => ({
+                          ...prev,
+                          newProductAlerts: e.target.checked,
+                        }))
+                      }
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: generalSettings.newProductAlerts
+                          ? "#10b981"
+                          : "#cbd5e1",
+
+                        borderRadius: "28px",
+                        transition: "0.3s",
+                      }}
+                    >
+                      <span
+                        style={{
+                          position: "absolute",
+                          content: "",
+                          height: "20px",
+                          width: "20px",
+                          left: generalSettings.newProductAlerts
+                            ? "28px"
+                            : "4px",
+
+                          bottom: "4px",
+                          background: "white",
+                          borderRadius: "50%",
+                          transition: "0.3s",
+                        }}
+                      />
+                    </span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -685,6 +798,7 @@ const Settings = () => {
                     }}
                   />
                 </div>
+                {error && <p style={{ color: "#ef4444" }}>{error}</p>}
                 <div>
                   <button
                     onClick={handleChangePassword}
