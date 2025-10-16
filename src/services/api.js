@@ -63,13 +63,33 @@ const api = {
       method: "POST",
       body: JSON.stringify(product),
     }),
+  addCategory: (category) =>
+    fetchWithAuth(`${API_URL}/categories`, {
+      method: "POST",
+      body: JSON.stringify(category),
+    }),
   updateProduct: (id, product) =>
     fetchWithAuth(`${API_URL}/products/${id}`, {
       method: "PUT",
       body: JSON.stringify(product),
     }),
+
+  updateCategory: (id, category) =>
+    fetchWithAuth(`${API_URL}/categories/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(category),
+    }),
+  updateAppSettings: (id, settings) =>
+    fetchWithAuth(`${API_URL}/appSettings/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(settings),
+    }),
   deleteProduct: (id) =>
     fetchWithAuth(`${API_URL}/products/${id}`, {
+      method: "DELETE",
+    }),
+  deleteCategory: (id) =>
+    fetchWithAuth(`${API_URL}/categories/${id}`, {
       method: "DELETE",
     }),
   getProductById: (id) => {
@@ -84,6 +104,18 @@ const api = {
   },
   getStats: () => {
     return fetchWithAuth(`${API_URL}/stats`);
+  },
+  getAllCategories: () => {
+    return fetchWithAuth(`${API_URL}/categories`);
+  },
+  getAppSettings: () => {
+    return fetchWithAuth(`${API_URL}/appsettings`);
+  },
+  changePassword: (passwords) => {
+    return fetchWithAuth(`${API_URL}/users/change-password`, {
+      method: "PUT",
+      body: JSON.stringify(passwords),
+    });
   },
 };
 

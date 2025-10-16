@@ -1,13 +1,14 @@
 import { useState } from "react";
-// import api from "../services/api";
-import Sidebar from "./Sidebar";
+import api from "../services/api.js";
+
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const ProductForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
+    category_id: "",
     description: "",
     price: "",
     stock: "",
@@ -15,8 +16,8 @@ const ProductForm = () => {
     imageUrl: "",
   });
 
-  const categories = ["Electronics", "Accessories", "Office", "Books"];
-  console.log(formData);
+  const [categories, setCategories] = useState([]);
+  console.log("foemDat", formData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,8 +27,17 @@ const ProductForm = () => {
     }));
   };
 
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  const getCategories = async () => {
+    const data = await api.getAllCategories();
+    setCategories(data);
+  };
+
   const handleSubmit = async () => {
-    if (!formData.productName || !formData.price || !formData.stock) {
+    if (!formData.name || !formData.price || !formData.stock) {
       alert(
         "Please fill in all required fields (Product Name, Price, Stock Quantity)"
       );
@@ -44,7 +54,38 @@ const ProductForm = () => {
       return;
     }
 
-    alert("Product saved successfully!");
+    try {
+      // Convert data types before sending
+      const productData = {
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        barcode: formData.barcode || null,
+        imageUrl: formData.imageUrl || null,
+        ...(formData.category_id && {
+          category_id: parseInt(formData.category_id),
+        }),
+      };
+
+      console.log("Sending product data:", productData);
+      const data = await api.addProduct(productData);
+      console.log("Response:", data);
+
+      alert("Product saved successfully!");
+      setFormData({
+        name: "",
+        category_id: "",
+        description: "",
+        price: "",
+        stock: "",
+        barcode: "",
+        imageUrl: "",
+      });
+    } catch (error) {
+      console.error("Error creating product:", error);
+      alert("Error creating product: " + error.message);
+    }
   };
 
   return (
@@ -81,16 +122,16 @@ const ProductForm = () => {
               <div className="form-group">
                 <label className="form-label">Category *</label>
                 <select
-                  name="category"
+                  name="category_id"
                   className="form-input"
-                  value={formData.category}
+                  value={formData.category_id}
                   onChange={handleInputChange}
                   required
                 >
                   <option value="">Select a category</option>
                   {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
+                    <option key={category.id} value={category.id}>
+                      {category.name}
                     </option>
                   ))}
                 </select>
@@ -148,8 +189,9 @@ const ProductForm = () => {
                     <label className="form-label">Product Image</label>
                     <input
                       type="text"
-                      name="image"
+                      name="imageUrl"
                       value={formData.imageUrl}
+                      onChange={handleInputChange}
                       className="form-input"
                     />
                   </div>
