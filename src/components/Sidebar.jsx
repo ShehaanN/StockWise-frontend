@@ -1,12 +1,28 @@
 import { Link, NavLink } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import logo from "../assets/logoicon.png";
 
 const Sidebar = () => {
   const { logout } = useAuth();
   return (
     <div className="sidebar">
-      <div className="sidebar-logo">📦 StockWise</div>
+      <div
+        className="sidebar-logo"
+        style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+      >
+        <img
+          src={logo}
+          style={{
+            width: "35px",
+            height: "35px",
+            // display: "block",
+            // margin: "0 105px",
+          }}
+          alt="Logo"
+        />
+        <span>StockWise</span>
+      </div>
 
       <ul className="sidebar-nav">
         <li>

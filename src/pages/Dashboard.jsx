@@ -1,6 +1,7 @@
 import {
   Plus,
   Minus,
+  CircleAlert,
   TrendingUp,
   TrendingDown,
   Package,
@@ -346,7 +347,7 @@ const Dashboard = () => {
                 borderRadius: "8px",
               }}
             >
-              <TrendingUp style={{ color: "#10b981" }} size={32} />
+              <ShoppingCart style={{ color: "#10b981" }} size={32} />
             </div>
           </div>
         </div>
@@ -364,7 +365,7 @@ const Dashboard = () => {
                 borderRadius: "8px",
               }}
             >
-              <TrendingDown style={{ color: "#ef4444" }} size={32} />
+              <CircleAlert style={{ color: "#ef4444" }} size={32} />
             </div>
           </div>
         </div>
@@ -373,7 +374,7 @@ const Dashboard = () => {
           <div className="stat-card-content">
             <div>
               <div className="stat-label">Total Revenue</div>
-              <div className="stat-value">${stats.totalValue || 0}</div>
+              <div className="stat-value">Rs {stats.totalValue || 0}</div>
             </div>
             <div
               style={{
@@ -533,7 +534,7 @@ const Dashboard = () => {
                               color: "#64748b",
                             }}
                           >
-                            ${item?.price}
+                            Rs{item?.price}
                           </td>
                           <td
                             style={{
@@ -551,7 +552,7 @@ const Dashboard = () => {
                               fontWeight: "600",
                             }}
                           >
-                            ${item?.total?.toFixed(2)}
+                            Rs{item?.total?.toFixed(2)}
                           </td>
                           <td
                             style={{
@@ -601,7 +602,7 @@ const Dashboard = () => {
                             color: "#10b981",
                           }}
                         >
-                          ${bulkSaleTotal.toFixed(2)}
+                          Rs{bulkSaleTotal.toFixed(2)}
                         </td>
                         <td></td>
                       </tr>
@@ -788,7 +789,7 @@ const Dashboard = () => {
                               color: "#64748b",
                             }}
                           >
-                            ${item?.price}
+                            Rs{item?.price}
                           </td>
                           <td
                             style={{
@@ -806,7 +807,7 @@ const Dashboard = () => {
                               fontWeight: "600",
                             }}
                           >
-                            ${item.total?.toFixed(2)}
+                            Rs{item.total?.toFixed(2)}
                           </td>
                           <td
                             style={{
@@ -856,7 +857,7 @@ const Dashboard = () => {
                             color: "#10b981",
                           }}
                         >
-                          ${bulkAddStockTotal.toFixed(2)}
+                          Rs{bulkAddStockTotal.toFixed(2)}
                         </td>
                         <td></td>
                       </tr>
@@ -1033,10 +1034,10 @@ const Dashboard = () => {
                     {Math.abs(entry.quantity_change)}
                   </td>
                   <td style={{ padding: "1rem", color: "#64748b" }}>
-                    ${entry?.product_price || 0}
+                    Rs{entry?.product_price || 0}
                   </td>
                   <td style={{ padding: "1rem", fontWeight: "600" }}>
-                    $
+                    Rs
                     {(
                       Math.abs(entry.quantity_change) *
                       (entry.product_price || 0)

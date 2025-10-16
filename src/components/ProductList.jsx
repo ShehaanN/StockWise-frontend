@@ -8,177 +8,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
-// import api from "../services/api";
-import Sidebar from "./Sidebar";
-// import { debounce } from "../lib/utils";
+import { useEffect, useState } from "react";
+import { debounce } from "../lib/utils";
 import { useNavigate } from "react-router-dom";
 import dummyImage from "../assets/dummyimg.jpg";
+import api from "../services/api";
 
 const ProductList = () => {
   const navigate = useNavigate();
 
   const [currentProduct, setCurrentProduct] = useState(null);
-  const [products, setProducts] = useState([
-    {
-      id: 1,
-      name: "Laptop",
-      price: 999.99,
-      stock: 15,
-      description:
-        "A high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptopA high-performance laptop",
-      category: "Electronics",
-      barcode: "1234567890123",
-      image:
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
-    },
-    {
-      id: 2,
-      name: "Mouse",
-      price: 19.99,
-      stock: 50,
-      description: "Wireless mouse",
-      category: "Accessories",
-      barcode: "1234567890124",
-      image: "",
-    },
-    {
-      id: 3,
-      name: "Keyboard",
-      price: 49.99,
-      stock: 30,
-      description: "Mechanical keyboard",
-      category: "Accessories",
-      barcode: "1234567890125",
-      image: "",
-    },
-    {
-      id: 4,
-      name: "Monitor",
-      price: 199.99,
-      stock: 20,
-      description: "24-inch monitor",
-      category: "Electronics",
-      barcode: "1234567890126",
-      image: "",
-    },
-    {
-      id: 5,
-      name: "Desk Chair",
-      price: 89.99,
-      stock: 10,
-      description: "Ergonomic desk chair",
-      category: "Office",
-      barcode: "1234567890127",
-      image: "",
-    },
-    {
-      id: 6,
-      name: "Notebook",
-      price: 2.99,
-      stock: 100,
-      description: "College-ruled notebook",
-      category: "Books",
-      barcode: "1234567890128",
-      image: "",
-    },
-    {
-      id: 7,
-      name: "Pen Set",
-      price: 5.99,
-      stock: 200,
-      description: "Set of 10 pens",
-      category: "Office",
-      barcode: "1234567890129",
-      image: "",
-    },
-    {
-      id: 8,
-      name: "Headphones",
-      price: 59.99,
-      stock: 25,
-      description: "Over-ear headphones",
-      category: "Electronics",
-      barcode: "1234567890130",
-      image: "",
-    },
-    {
-      id: 9,
-      name: "USB Drive",
-      price: 14.99,
-      stock: 75,
-      description: "32GB USB flash drive",
-      category: "Accessories",
-      barcode: "1234567890131",
-      image: "",
-    },
-    {
-      id: 10,
-      name: "Backpack",
-      price: 39.99,
-      stock: 40,
-      description: "Durable backpack",
-      category: "Accessories",
-      barcode: "1234567890132",
-      image: "",
-    },
-    {
-      id: 11,
-      name: "Smartphone",
-      price: 699.99,
-      stock: 18,
-      description: "Latest model smartphone",
-      category: "Electronics",
-      barcode: "1234567890133",
-      image: "",
-    },
-    {
-      id: 12,
-      name: "Tablet",
-      price: 299.99,
-      stock: 22,
-      description: "10-inch tablet",
-      category: "Electronics",
-      barcode: "1234567890134",
-      image: "",
-    },
-    {
-      id: 13,
-      name: "Charger",
-      price: 24.99,
-      stock: 60,
-      description: "Fast charging adapter",
-      category: "Accessories",
-      barcode: "1234567890135",
-      image: "",
-    },
-    {
-      id: 14,
-      name: "Desk Lamp",
-      price: 29.99,
-      stock: 35,
-      description: "LED desk lamp",
-      category: "Office",
-      barcode: "1234567890136",
-      image: "",
-    },
-    {
-      id: 15,
-      name: "Planner",
-      price: 12.99,
-      stock: 80,
-      description: "2024 daily planner",
-      category: "Books",
-      barcode: "1234567890137",
-      image: "",
-    },
-  ]);
+  const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  console.log("produ:", products);
 
   // Calculate pagination
   const indexOfLastProduct = currentPage * itemsPerPage;
@@ -211,7 +58,6 @@ const ProductList = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // Update the product state here
     setCurrentProduct((prev) => ({
       ...prev,
       [name]: value,
@@ -220,57 +66,75 @@ const ProductList = () => {
 
   console.log("Current Product:", currentProduct);
 
-  // useEffect(() => {
-  //   fetchProducts();
-  // }, [searchTerm]);
+  useEffect(() => {
+    fetchProducts();
+  }, [searchTerm]);
 
-  // const fetchProducts = async () => {
-  //   setIsLoading(true);
-  //   setError(null);
-  //   try {
-  //     const data = await api.getProducts(searchTerm);
-  //     setProducts(data);
-  //   } catch (error) {
-  //     console.error("Error fetching products:", error);
-  //     setError("Failed to fetch products");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await api.getAllCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        setError("Failed to fetch categories");
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  // const handleDelete = async (productId) => {
-  //   try {
-  //     await api.deleteProduct(productId);
-  //     fetchProducts();
-  //   } catch (error) {
-  //     console.error("Error deleting product:", error);
-  //   }
-  // };
+  console.log("cate:", categories);
 
-  // const handleUpdate = async (event) => {
-  //   event.preventDefault();
-  //   if (!currentProduct || !currentProduct.id) return;
-  //   try {
-  //     const poductToUpdate = {
-  //       name: currentProduct.name,
-  //       price: currentProduct.price,
-  //       stock: currentProduct.stock,
-  //     };
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await api.getProducts(searchTerm);
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setError("Failed to fetch products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  //     await api.updateProduct(currentProduct.id, poductToUpdate);
-  //     fetchProducts();
-  //     setCurrentProduct(null);
+  const handleDelete = async (productId) => {
+    try {
+      await api.deleteProduct(productId);
+      fetchProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
+  };
 
-  //     console.log("Product updated successfully");
-  //   } catch (error) {
-  //     console.error("Error updating product:", error);
-  //   }
-  // };
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    if (!currentProduct || !currentProduct.id) return;
+    try {
+      const poductToUpdate = {
+        name: currentProduct.name,
+        price: currentProduct.price,
+        category_id: currentProduct.category_id,
+        imageUrl: currentProduct.imageUrl,
+        description: currentProduct.description,
+        barcode: currentProduct.barcode,
+      };
+
+      await api.updateProduct(currentProduct.id, poductToUpdate);
+      fetchProducts();
+      setCurrentProduct(null);
+
+      console.log("Product updated successfully");
+    } catch (error) {
+      console.error("Error updating product:", error);
+    }
+  };
 
   //  debounced search function
-  // const debouncedSearch = debounce((term) => {
-  //   setSearchTerm(term);
-  // }, 300);
+  const debouncedSearch = debounce((term) => {
+    setSearchTerm(term);
+  }, 300);
 
   return (
     <div>
@@ -283,8 +147,8 @@ const ProductList = () => {
             type="text"
             className="form-input search-input"
             placeholder="Search products by name..."
-            // value={searchTerm}
-            // onChange={(e) => debouncedSearch(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => debouncedSearch(e.target.value)}
           />
           {searchTerm && (
             <button
@@ -356,7 +220,7 @@ const ProductList = () => {
                             />
                           ) : (
                             <img
-                              src={dummyImage}
+                              src={product.imageUrl || dummyImage}
                               alt={product.name}
                               style={{
                                 width: "40px",
@@ -371,7 +235,7 @@ const ProductList = () => {
                           <strong>{product.name}</strong>
                         </td>
                         <td>
-                          <strong>{product.category}</strong>
+                          <strong>{product.category_name}</strong>
                         </td>
                         <td>${parseFloat(product.price).toFixed(2)}</td>
                         <td>{product.stock}</td>
@@ -462,14 +326,38 @@ const ProductList = () => {
                                       <label className="form-label">
                                         Category *
                                       </label>
-                                      <input
+                                      {/* <input
                                         type="text"
-                                        name="category"
+                                        name="category_id"
                                         className="form-input"
-                                        value={currentProduct?.category || ""}
+                                        value={
+                                          currentProduct?.category_id || ""
+                                        }
                                         onChange={handleInputChange}
                                         required
-                                      />
+                                      /> */}
+                                      <select
+                                        name="category_id"
+                                        id="category_id"
+                                        className="form-input"
+                                        value={
+                                          currentProduct?.category_id || ""
+                                        }
+                                        onChange={handleInputChange}
+                                        required
+                                      >
+                                        <option value="">
+                                          Select a category
+                                        </option>
+                                        {categories.map((category) => (
+                                          <option
+                                            key={category.id}
+                                            value={category.id}
+                                          >
+                                            {category.name}
+                                          </option>
+                                        ))}
+                                      </select>
                                     </div>
                                     {/* price */}
                                     <div className="grid gap-3">
@@ -478,9 +366,9 @@ const ProductList = () => {
                                       </label>
                                       <input
                                         type="text"
-                                        name="name"
+                                        name="price"
                                         className="form-input"
-                                        value={currentProduct?.name || ""}
+                                        value={currentProduct?.price || ""}
                                         onChange={handleInputChange}
                                         required
                                       />
@@ -509,9 +397,9 @@ const ProductList = () => {
                                       </label>
                                       <input
                                         type="text"
-                                        name="image"
+                                        name="imageUrl"
                                         className="form-input"
-                                        value={currentProduct?.image || ""}
+                                        value={currentProduct?.imageUrl || ""}
                                         onChange={handleInputChange}
                                       />
                                     </div>
@@ -542,10 +430,9 @@ const ProductList = () => {
                                       <button
                                         type="button"
                                         className="btn btn-primary"
-                                        // onClick={() => (
-                                        //   handleUpdate(event),
-                                        //   navigate("/products")
-                                        // )}
+                                        onClick={(e) => (
+                                          handleUpdate(e), navigate("/products")
+                                        )}
                                       >
                                         Update Product
                                       </button>

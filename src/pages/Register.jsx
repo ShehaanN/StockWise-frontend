@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import logowithtext from "../assets/logoicon.png";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -46,61 +47,6 @@ const Register = () => {
     }
   };
 
-  if (isSignedUp) {
-    return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#f8fafc",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "2rem",
-        }}
-      >
-        <div
-          style={{
-            background: "white",
-            borderRadius: "16px",
-            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-            padding: "3rem",
-            maxWidth: "450px",
-            width: "100%",
-            textAlign: "center",
-          }}
-        >
-          <div
-            style={{
-              width: "80px",
-              height: "80px",
-              background: "#d1fae5",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 1.5rem",
-              fontSize: "2.5rem",
-            }}
-          >
-            ✓
-          </div>
-          <h1
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: "700",
-              color: "#0f172a",
-              marginBottom: "0.5rem",
-            }}
-          >
-            Welcome!
-          </h1>
-          <p style={{ color: "#64748b", margin: 0 }}>
-            Your account has been created successfully.
-          </p>
-        </div>
-      </div>
-    );
-  }
   return (
     <div style={{ minHeight: "100vh", background: "#f8fafc", display: "flex" }}>
       {/* Left Side - Sign Up Form */}
@@ -341,7 +287,18 @@ const Register = () => {
         }}
       >
         <div style={{ maxWidth: "500px" }}>
-          <div style={{ fontSize: "4rem", marginBottom: "2rem" }}>📦</div>
+          <div style={{ fontSize: "4rem", marginBottom: "2rem" }}>
+            <img
+              src={logowithtext}
+              style={{
+                width: "100px",
+                height: "100px",
+                display: "block",
+                margin: "0 105px",
+              }}
+              alt="Logo"
+            />
+          </div>
           <h1
             style={{
               fontSize: "2.5rem",

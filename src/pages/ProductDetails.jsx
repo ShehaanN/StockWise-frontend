@@ -15,10 +15,20 @@ const ProductDetails = () => {
   const [error, setError] = useState("");
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(true);
-  const handleSaveNotes = () => {
-    console.log("Saved notes:", notes);
+  const handleSaveNotes = async () => {
+    const notemsg = {
+      notes: notes,
+    };
+    await api.updateProduct(product.id, notemsg);
     alert("Notes saved successfully!");
   };
+
+  const totalOut = history.reduce(
+    (sum, item) => sum + Math.abs(item.quantity_change),
+    0
+  );
+
+  console.log("totalOut:", totalOut);
 
   console.log("product:", product);
   console.log("history:", history);
@@ -111,7 +121,7 @@ const ProductDetails = () => {
             {product.name}
           </h1>
           <p style={{ color: "#64748b", margin: 0 }}>
-            Created: {product.createdDate}
+            Created: {product?.created_at.toString().split("T")[0]}
           </p>
         </div>
       </div>
@@ -214,7 +224,7 @@ const ProductDetails = () => {
                           fontWeight: "600",
                         }}
                       >
-                        {product.category}
+                        {product.category_name}
                       </span>
                     </div>
                     {/* status */}
@@ -405,11 +415,11 @@ const ProductDetails = () => {
                   Low Stock Alert
                 </label>
                 <p style={{ color: "#64748b", margin: 0 }}>
-                  Alert when below 15 units
+                  Alert when below 10 units
                 </p>
               </div>
 
-              {product.stock < 15 && (
+              {product.stock < 10 && (
                 <div
                   style={{
                     background: "#fef3c7",
@@ -483,7 +493,7 @@ const ProductDetails = () => {
                 >
                   <span style={{ color: "#64748b" }}>Total Sold</span>
                   <strong style={{ fontSize: "1.125rem" }}>
-                    {product.totalSold} units
+                    {totalOut} units
                   </strong>
                 </div>
                 <div
@@ -495,10 +505,7 @@ const ProductDetails = () => {
                 >
                   <span style={{ color: "#64748b" }}>Revenue Generated</span>
                   <strong style={{ color: "#10b981", fontSize: "1.125rem" }}>
-                    $
-                    {product?.revenue?.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                    }) || ""}
+                    Rs{product?.price * totalOut}
                   </strong>
                 </div>
                 <div
@@ -508,8 +515,10 @@ const ProductDetails = () => {
                     alignItems: "center",
                   }}
                 >
-                  <span style={{ color: "#64748b" }}>Last Sale</span>
-                  <strong>{product.lastSale}</strong>
+                  <span style={{ color: "#64748b" }}>Last Transaction</span>
+                  <strong>
+                    {history[0]?.created_at.toString().split("T")[0] || ""}
+                  </strong>
                 </div>
               </div>
             </div>

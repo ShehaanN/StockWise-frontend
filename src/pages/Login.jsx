@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import logowithtext from "../assets/logoicon.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -56,7 +57,23 @@ const Login = () => {
         }}
       >
         <div style={{ maxWidth: "500px" }}>
-          <div style={{ fontSize: "4rem", marginBottom: "2rem" }}>📦</div>
+          <div
+            style={{
+              fontSize: "4rem",
+              marginBottom: "2rem",
+            }}
+          >
+            <img
+              src={logowithtext}
+              style={{
+                width: "100px",
+                height: "100px",
+                display: "block",
+                margin: "0 105px",
+              }}
+              alt="Logo"
+            />
+          </div>
           <h1
             style={{
               fontSize: "2.5rem",
