@@ -24,9 +24,10 @@ This project was built from the ground up, starting with a **pure Node.js backen
 
 ## ✨ **Key Features**
 
--   **🔐 Secure Authentication:** Full user registration and login system using JWT (JSON Web Tokens) for secure, stateless sessions.
+-   **☁️ Cloud Image Uploads:** Products can have images uploaded directly to Cloudinary for fast, scalable, and reliable media management.
+-   **🔐 Secure Authentication:** Secure Authentication: Full user registration and login system using JWT (JSON Web Tokens) for secure, stateless sessions.
 -   **📊 Interactive Dashboard:** At-a-glance view of key metrics like total product count, total inventory value, and low-stock item warnings.
--   **📦 Full Product Management (CRUD):** Create, read, update, and delete products with details like name, price, stock, and category.
+-   **📦 Full Product Management (CRUD):**  Create, read, update, and delete products with details like name, price, stock, category, and an image.
 -   **🔍 Search & Filtering:** Instantly search for products by name across the entire inventory.
 -   **📈 Stock Movement Tracking:** A detailed audit trail for every product, showing a history of sales, stock purchases, and adjustments.
 -   **📝 Sales Logging:** A dedicated page to record incoming stock and outgoing sales, which automatically updates inventory levels.
@@ -41,7 +42,7 @@ This project was built from the ground up, starting with a **pure Node.js backen
 ## 🛠️ **Tech Stack**
 
 ### **Frontend**
-*   **React:** A declarative library for building dynamic and responsive user interfaces.
+*   **React/shadcn:** A declarative library for building dynamic and responsive user interfaces.
 *   **React Router:** For client-side routing to create a seamless multi-page experience.
 *   **React Context API:** For global state management, specifically for user authentication status.
 *   **Native Fetch API:** For all communication with the backend RESTful API.
@@ -50,8 +51,11 @@ This project was built from the ground up, starting with a **pure Node.js backen
 ### **Backend**
 *   **Node.js (Pure):** The backend is built using only native Node.js modules (`http`, `url`) to demonstrate a fundamental understanding of server-side logic without framework abstractions.
 *   **MySQL:** A robust relational database for storing all application data.
+*   **Busboy:** A high-performance, stream-based parser for handling multipart/form-data (file uploads) in a pure Node.js environment.
+*   **Cloudinary:** For cloud-based image storage and delivery.
 *   **jsonwebtoken (`jwt`):** To sign and verify JWTs for stateless user authentication.
 *   **bcryptjs:** For securely hashing user passwords before storing them in the database.
+*   **dotenv:** For managing environment variables
 
 ---
 
@@ -88,6 +92,7 @@ Follow these instructions to get the project running on your local machine.
 *   **Node.js & npm:** v18.x or higher
 *   **MySQL Server:** v8.x or higher
 *   A MySQL client like **MySQL Workbench** or **DBeaver** to manage the database.
+*   A Cloudinary Account (a free account is sufficient).
 
 ---
 
@@ -106,24 +111,28 @@ Follow these instructions to get the project running on your local machine.
 
 3.  **Backend Setup:**
     ```bash
-     git clone https://github.com/ShehaanN/StockWise-backend.git
      cd StockWise-backend
 
     # Install dependencies
     npm install
 
-    # IMPORTANT: Create a .env file for your secret key
-    # Create a file named .env and add the following line:
-    # JWT_SECRET=your_super_secret_and_long_random_string
+    # Create a .env file and add your credentials
+    # Replace placeholder values with your actual credentials
+    touch .env
 
     # Update database credentials in db.js if they are different from the defaults.
 
     # Start the backend server
     npm start
     ```
-    The backend server will be running on `http://localhost:5000`.
-
-4.  **Frontend Setup:**
+    Add the following to your backend/.env file:
+    ```bash
+    JWT_SECRET=your_super_secret_and_long_random_string
+    CLOUD_NAME=your_cloudinary_cloud_name
+    CLOUDINARY_API_KEY=your_cloudinary_api_key
+    CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+    ```
+5.  **Frontend Setup:**
     ```bash
     # Open a new terminal and navigate to the frontend folder
     cd frontend
@@ -136,7 +145,7 @@ Follow these instructions to get the project running on your local machine.
     ```
     The frontend will be accessible at `http://localhost:5173` (or another port if 5173 is in use).
 
-5.  **Access the Application:** Open your browser and go to `http://localhost:5173`. You can register a new user to begin.
+6.  **Access the Application:** Open your browser and go to `http://localhost:5173`. You can register a new user to begin.
 
 ---
 
@@ -154,7 +163,7 @@ Follow these instructions to get the project running on your local machine.
 
 ---
 
-## 🔐 **Authentication Flow**
+## 🔐 **Authentication & File Upload Flow**
 
 The application uses a token-based authentication flow with JWT.
 
@@ -165,6 +174,16 @@ The application uses a token-based authentication flow with JWT.
 5.  **Authenticated Requests:** For every subsequent request to a protected route, the frontend includes the JWT in the `Authorization: Bearer <token>` header.
 6.  **Server-Side Verification:** A middleware on the backend intercepts each request, verifies the JWT's signature and expiration, and grants or denies access accordingly.
 
+Image Uploads
+
+The image upload process is handled through a multipart/form-data stream, demonstrating advanced backend capabilities:
+
+1.  The React frontend sends the form data, including the image file, using the FormData API.
+2.  The pure Node.js backend uses the busboy library to parse the incoming multipart stream directly from the request.
+3.  As busboy processes the file stream, it is piped directly to the Cloudinary upload stream.
+4.  Once the upload to Cloudinary is complete, the secure image URL is returned and stored in the products table in the database.
+
+This stream-based approach is highly efficient as it avoids saving the file to the server's disk temporarily.
 ---
 
 ## 🧱 **Future Improvements**
