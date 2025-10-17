@@ -260,7 +260,7 @@ const ProductList = () => {
                         </td>
                         <td>{product.barcode}</td>
                         <td>
-                          {product.description.length > 50
+                          {product.description?.length > 50
                             ? `${product.description.substring(0, 50)}...`
                             : product.description}
                         </td>

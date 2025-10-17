@@ -6,7 +6,9 @@ import { useEffect } from "react";
 
 const ProductForm = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [productData, setProductData] = useState({
     name: "",
     category_id: "",
     description: "",
@@ -17,14 +19,21 @@ const ProductForm = () => {
   });
 
   const [categories, setCategories] = useState([]);
-  console.log("foemDat", formData);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setProductData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
   useEffect(() => {
@@ -36,44 +45,110 @@ const ProductForm = () => {
     setCategories(data);
   };
 
-  const handleSubmit = async () => {
-    if (!formData.name || !formData.price || !formData.stock) {
-      alert(
-        "Please fill in all required fields (Product Name, Price, Stock Quantity)"
-      );
+  // const handleSubmit = async () => {
+  //   if (!formData.name || !formData.price || !formData.stock) {
+  //     alert(
+  //       "Please fill in all required fields (Product Name, Price, Stock Quantity)"
+  //     );
+  //     return;
+  //   }
+
+  //   if (parseFloat(formData.price) <= 0) {
+  //     alert("Price must be greater than 0");
+  //     return;
+  //   }
+
+  //   if (parseInt(formData.stock) < 0) {
+  //     alert("Stock quantity cannot be negative");
+  //     return;
+  //   }
+
+  //   try {
+  //     // Convert data types before sending
+  //     const productData = {
+  //       name: formData.name,
+  //       description: formData.description,
+  //       price: parseFloat(formData.price),
+  //       stock: parseInt(formData.stock),
+  //       barcode: formData.barcode || null,
+  //       imageUrl: formData.imageUrl || null,
+  //       ...(formData.category_id && {
+  //         category_id: parseInt(formData.category_id),
+  //       }),
+  //     };
+
+  //     console.log("Sending product data:", productData);
+  //     const data = await api.addProduct(productData);
+  //     console.log("Response:", data);
+
+  //     alert("Product saved successfully!");
+  //     setFormData({
+  //       name: "",
+  //       category_id: "",
+  //       description: "",
+  //       price: "",
+  //       stock: "",
+  //       barcode: "",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error creating product:", error);
+  //     alert("Error creating product: " + error.message);
+  //   }
+  // };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validation
+    if (!productData.name || !productData.price || !productData.stock) {
+      alert("Please fill in all required fields (Product Name, Price, Stock)");
       return;
     }
 
-    if (parseFloat(formData.price) <= 0) {
+    if (parseFloat(productData.price) <= 0) {
       alert("Price must be greater than 0");
       return;
     }
 
-    if (parseInt(formData.stock) < 0) {
+    if (parseInt(productData.stock) < 0) {
       alert("Stock quantity cannot be negative");
       return;
     }
 
     try {
-      // Convert data types before sending
-      const productData = {
-        name: formData.name,
-        description: formData.description,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        barcode: formData.barcode || null,
-        imageUrl: formData.imageUrl || null,
-        ...(formData.category_id && {
-          category_id: parseInt(formData.category_id),
-        }),
-      };
+      if (imageFile) {
+        // Use FormData for file upload
+        const formData = new FormData();
+        formData.append("name", productData.name);
+        formData.append("price", parseFloat(productData.price));
+        formData.append("stock", parseInt(productData.stock));
+        formData.append("description", productData.description || "");
+        formData.append("barcode", productData.barcode || "");
+        if (productData.category_id) {
+          formData.append("category_id", parseInt(productData.category_id));
+        }
+        formData.append("image", imageFile); // Changed from "imageUrl" to "image"
 
-      console.log("Sending product data:", productData);
-      const data = await api.addProduct(productData);
-      console.log("Response:", data);
+        await api.addProduct(formData);
+      } else {
+        // Use regular JSON for products without images
+        const jsonData = {
+          name: productData.name,
+          price: parseFloat(productData.price),
+          stock: parseInt(productData.stock),
+          description: productData.description || null,
+          barcode: productData.barcode || null,
+          ...(productData.category_id && {
+            category_id: parseInt(productData.category_id),
+          }),
+        };
 
-      alert("Product saved successfully!");
-      setFormData({
+        await api.addProduct(jsonData);
+      }
+
+      alert("Product added successfully!");
+      // Reset form
+      setProductData({
         name: "",
         category_id: "",
         description: "",
@@ -82,9 +157,12 @@ const ProductForm = () => {
         barcode: "",
         imageUrl: "",
       });
+      setImageFile(null);
+      setPreviewUrl("");
+      // navigate('/products');
     } catch (error) {
-      console.error("Error creating product:", error);
-      alert("Error creating product: " + error.message);
+      console.error("Failed to add product:", error);
+      alert("Failed to add product: " + error.message);
     }
   };
 
@@ -113,7 +191,7 @@ const ProductForm = () => {
                   type="text"
                   name="name"
                   className="form-input"
-                  value={formData.name}
+                  value={productData.name}
                   onChange={handleInputChange}
                   required
                 />
@@ -124,7 +202,7 @@ const ProductForm = () => {
                 <select
                   name="category_id"
                   className="form-input"
-                  value={formData.category_id}
+                  value={productData.category_id}
                   onChange={handleInputChange}
                   required
                 >
@@ -143,7 +221,7 @@ const ProductForm = () => {
                   type="number"
                   name="price"
                   className="form-input"
-                  value={formData.price}
+                  value={productData.price}
                   onChange={handleInputChange}
                   step="0.01"
                   min="0"
@@ -158,7 +236,7 @@ const ProductForm = () => {
                   name="description"
                   rows="6"
                   className="form-input"
-                  value={formData.description}
+                  value={productData.description}
                   onChange={handleInputChange}
                   required
                 />
@@ -178,7 +256,7 @@ const ProductForm = () => {
                       type="number"
                       name="stock"
                       className="form-input"
-                      value={formData.stock}
+                      value={productData.stock}
                       onChange={handleInputChange}
                       min="0"
                       required
@@ -188,12 +266,25 @@ const ProductForm = () => {
                   <div className="form-group">
                     <label className="form-label">Product Image</label>
                     <input
-                      type="text"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleInputChange}
+                      type="file"
+                      name="image"
+                      accept="image/*"
+                      onChange={handleFileChange}
                       className="form-input"
                     />
+                  </div>
+                  <div>
+                    {previewUrl && (
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          objectFit: "cover",
+                        }}
+                      />
+                    )}
                   </div>
                   {/* barcode */}
                   <div className="form-group">
@@ -202,7 +293,7 @@ const ProductForm = () => {
                       type="text"
                       name="barcode"
                       className="form-input"
-                      value={formData.barcode}
+                      value={productData.barcode}
                       onChange={handleInputChange}
                       required
                     />
@@ -222,7 +313,7 @@ const ProductForm = () => {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() => {
-                  setFormData({ name: "", price: "", stock: "" });
+                  setProductData({ name: "", price: "", stock: "" });
                   navigate("/products");
                 }}
               >

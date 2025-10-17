@@ -3,9 +3,14 @@ const API_URL = "http://localhost:3000";
 const fetchWithAuth = async (url, options = {}) => {
   const token = localStorage.getItem("token");
   const headers = {
-    "Content-Type": "application/json",
     ...options.headers,
   };
+
+  // Only set Content-Type for non-FormData requests
+  // FormData will automatically set the correct Content-Type with boundary
+  if (!(options.body instanceof FormData)) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (token) {
     // headers["Authorization"] = `Bearer ${token}`;
@@ -58,11 +63,12 @@ const api = {
       body: JSON.stringify(transactionData),
     });
   },
-  addProduct: (product) =>
-    fetchWithAuth(`${API_URL}/products`, {
+  addProduct: (data) => {
+    return fetchWithAuth(`${API_URL}/products`, {
       method: "POST",
-      body: JSON.stringify(product),
-    }),
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+  },
   addCategory: (category) =>
     fetchWithAuth(`${API_URL}/categories`, {
       method: "POST",
